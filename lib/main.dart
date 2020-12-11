@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:kbAssistant/connector/kickbase.dart';
 import 'package:kbAssistant/widget/login.dart';
 import 'package:kbAssistant/widget/userInfo.dart';
 
 import 'model/league.dart';
 import 'model/user.dart';
+import './model/player.dart';
 import 'widget/budget.dart';
 
 void main() {
@@ -36,6 +38,8 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  final _mioFormat = new NumberFormat.compact(locale: 'de_DE');
+
   Future<User> _currentUser;
 
   League currentLeague = new League("fakeID", "no League");
@@ -43,6 +47,8 @@ class _MyHomePageState extends State<MyHomePage> {
   bool _isloggedIn = false;
 
   Future<double> fetchedBudget;
+
+  Future<List<Player>> fetchedPlayers;
 
   Future<User> _login(String username, String password) async {
     Future<User> loggedInUser = kickbaseLogin(username, password);
@@ -54,10 +60,12 @@ class _MyHomePageState extends State<MyHomePage> {
     return loggedInUser;
   }
 
-  void changeLeague(League league, String token) {
+  void changeLeague(League league, String token, String username) {
     setState(() {
       this.currentLeague = league;
       this.fetchedBudget = fetchBudgetForLeague(league.id, token);
+      this.fetchedPlayers =
+          fetchPlayerForLeagueFromUser(league.id, username, token);
     });
   }
 
@@ -82,7 +90,7 @@ class _MyHomePageState extends State<MyHomePage> {
         appBar: appbar,
         body: Center(
           child: (!_isloggedIn)
-              ? LoginPage(_login, changeLeague ,netWidth, netHeight)
+              ? LoginPage(_login, changeLeague, netWidth, netHeight)
               : FutureBuilder<User>(
                   future: _currentUser,
                   builder: (context, snapshot) {
@@ -103,6 +111,49 @@ class _MyHomePageState extends State<MyHomePage> {
                               return CircularProgressIndicator();
                             },
                           ),
+                          FutureBuilder(
+                            future: fetchedPlayers,
+                            builder: (context, snapshot) {
+                              if (snapshot.hasData) {
+                                // Next step: Extract this widget in a custom widget and try to play around with set value
+                                return Container(
+                                  height: netHeight * 0.75,
+                                  child: ListView.builder(
+                                    itemBuilder: (ctx, index) {
+                                      return Card(
+                                        elevation: 5,
+                                        margin: EdgeInsets.symmetric(
+                                          vertical: 8,
+                                          horizontal: 5,
+                                        ),
+                                        child: ListTile(
+                                          leading: CircleAvatar(
+                                            radius: netWidth * 0.06,
+                                            backgroundImage: NetworkImage(
+                                                snapshot.data[index].coverURL),
+                                          ),
+                                          title: Text(
+                                              "${snapshot.data[index].lastName}"),
+                                          subtitle: Text("Angebot: " +
+                                              _mioFormat.format(snapshot
+                                                  .data[index]
+                                                  .offers[0]
+                                                  .price) +
+                                              " €"),
+                                          trailing: Checkbox(
+                                              value: snapshot.data[index].toSell, onChanged: (value) {}),
+                                        ),
+                                      );
+                                    },
+                                    itemCount: snapshot.data.length,
+                                  ),
+                                );
+                              } else if (snapshot.hasError) {
+                                return Text("${snapshot.error}");
+                              }
+                              return CircularProgressIndicator();
+                            },
+                          )
                         ],
                       );
                     } else if (snapshot.hasError) {

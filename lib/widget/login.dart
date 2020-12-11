@@ -57,7 +57,8 @@ class _LoginPageState extends State<LoginPage> {
                 widget
                     ._login(usernameController.text, passwordController.text)
                     .then((result) {
-                  widget._changeLeague(result.leagues[0], result.accessToken);
+                  widget._changeLeague(
+                      result.leagues[0], result.accessToken, result.username);
                 });
               },
               child: Text(

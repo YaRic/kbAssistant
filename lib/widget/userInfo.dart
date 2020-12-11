@@ -48,7 +48,7 @@ class UserInfo extends StatelessWidget {
                       fontFamily: 'Eurostile',
                       fontWeight: FontWeight.bold),
                   onChanged: (League newValue) {
-                    changeLeague(newValue, user.accessToken);
+                    changeLeague(newValue, user.accessToken, user.username);
                   },
                   items: user.leagues
                       .map<DropdownMenuItem<League>>((League league) {
