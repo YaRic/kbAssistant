@@ -39,6 +39,7 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   final _mioFormat = new NumberFormat.compact(locale: 'de_DE');
+  final _kFormat = new NumberFormat("###,###", "de_DE");
 
   Future<User> _currentUser;
 
@@ -49,6 +50,8 @@ class _MyHomePageState extends State<MyHomePage> {
   Future<double> fetchedBudget;
 
   Future<List<Player>> fetchedPlayers;
+
+  List<Player> toSell = new List<Player>();
 
   Future<User> _login(String username, String password) async {
     Future<User> loggedInUser = kickbaseLogin(username, password);
@@ -67,6 +70,24 @@ class _MyHomePageState extends State<MyHomePage> {
       this.fetchedPlayers =
           fetchPlayerForLeagueFromUser(league.id, username, token);
     });
+  }
+
+  void checkPlayer(Player player) {
+    setState(() {
+      if (toSell.contains(player)) {
+        toSell.remove(player);
+      } else {
+        toSell.add(player);
+      }
+    });
+  }
+
+  double getSumToSell() {
+    double sum = 0;
+    toSell.forEach((element) {
+      sum = sum + element.offers[0].price;
+    });
+    return sum;
   }
 
   @override
@@ -104,7 +125,8 @@ class _MyHomePageState extends State<MyHomePage> {
                             builder: (context, snapshot) {
                               print(snapshot);
                               if (snapshot.hasData) {
-                                return Budget(snapshot.data, netHeight);
+                                return Budget((snapshot.data + getSumToSell()),
+                                    netHeight);
                               } else if (snapshot.hasError) {
                                 return Text("${snapshot.error}");
                               }
@@ -134,14 +156,28 @@ class _MyHomePageState extends State<MyHomePage> {
                                           ),
                                           title: Text(
                                               "${snapshot.data[index].lastName}"),
-                                          subtitle: Text("Angebot: " +
-                                              _mioFormat.format(snapshot
-                                                  .data[index]
-                                                  .offers[0]
-                                                  .price) +
-                                              " €"),
+                                          subtitle: snapshot.data[index]
+                                                      .offers[0].price >
+                                                  1000000
+                                              ? Text("Angebot: " +
+                                                  _mioFormat.format(snapshot
+                                                      .data[index]
+                                                      .offers[0]
+                                                      .price) +
+                                                  " €")
+                                              : Text("Angebot: " +
+                                                  _kFormat.format(snapshot
+                                                      .data[index]
+                                                      .offers[0]
+                                                      .price / 1000) +
+                                                  "k €"),
                                           trailing: Checkbox(
-                                              value: snapshot.data[index].toSell, onChanged: (value) {}),
+                                              value: toSell.contains(
+                                                  snapshot.data[index]),
+                                              onChanged: (_) {
+                                                checkPlayer(
+                                                    snapshot.data[index]);
+                                              }),
                                         ),
                                       );
                                     },

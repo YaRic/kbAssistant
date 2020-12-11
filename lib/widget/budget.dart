@@ -27,7 +27,7 @@ class Budget extends StatelessWidget {
         top: _height * 0.02,
         bottom: _height * 0.02,
       ),
-      child: Text(
+      child: Text("Kontostand: " + 
         _euroFormatGerman.format(_budget) + " €",
         style: TextStyle(
           color: getcolor(_budget),
