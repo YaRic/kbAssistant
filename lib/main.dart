@@ -44,14 +44,14 @@ class _MyHomePageState extends State<MyHomePage> {
 
   Future<double> fetchedBudget;
 
-  void _login(String username, String password) {
+  Future<User> _login(String username, String password) async {
     Future<User> loggedInUser = kickbaseLogin(username, password);
 
     setState(() {
       this._currentUser = loggedInUser;
       this._isloggedIn = true;
     });
-    print(loggedInUser);
+    return loggedInUser;
   }
 
   void changeLeague(League league, String token) {
@@ -64,12 +64,15 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     final appbar = AppBar(
-      backgroundColor: Colors.black,
+        backgroundColor: Colors.black,
         title: Text(
-      "Der KB-Assi",
-      style: TextStyle(fontFamily: "Eurostile", fontSize: 26, fontWeight: FontWeight.bold),
-      textAlign: TextAlign.right,
-    ));
+          "Der KB-Assi",
+          style: TextStyle(
+              fontFamily: "Eurostile",
+              fontSize: 26,
+              fontWeight: FontWeight.bold),
+          textAlign: TextAlign.right,
+        ));
     final double netWidth = MediaQuery.of(context).size.width;
     final double netHeight = (MediaQuery.of(context).size.height -
         appbar.preferredSize.height -
@@ -79,7 +82,7 @@ class _MyHomePageState extends State<MyHomePage> {
         appBar: appbar,
         body: Center(
           child: (!_isloggedIn)
-              ? LoginPage(_login, netWidth, netHeight)
+              ? LoginPage(_login, changeLeague ,netWidth, netHeight)
               : FutureBuilder<User>(
                   future: _currentUser,
                   builder: (context, snapshot) {
