@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:http/http.dart' as http;
 import '../model/user.dart';
@@ -21,4 +22,22 @@ Future<User> kickbaseLogin(String username, String password) async {
   } else {
     throw Exception('Failed to login');
   }
+}
+
+Future<double> fetchBudgetForLeague(String LeagueId, String token) async {
+  final response =
+      await http.get('https://api.kickbase.com/leagues/${LeagueId}/me', headers: {HttpHeaders.cookieHeader: "kkstrauth=${token};"});
+
+  if (response.statusCode == 200) {
+    return parseBudgetFromLeagueMeCall(jsonDecode(response.body));
+  } else {
+    // If the server did not return a 200 OK response,
+    // then throw an exception.
+    throw Exception('Failed to fetch current budget');
+  }
+}
+
+double parseBudgetFromLeagueMeCall(json) {
+  String stringResult = json['budget'].toString();
+  return double.parse(stringResult);
 }

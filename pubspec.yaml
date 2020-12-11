@@ -26,6 +26,8 @@ dependencies:
 
   http: ^0.12.2
 
+  intl: ^0.16.1
+
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
@@ -62,7 +64,11 @@ flutter:
   # "family" key with the font family name, and a "fonts" key with a
   # list giving the asset and other descriptors for the font. For
   # example:
-  # fonts:
+  fonts:
+     - family: Eurostile
+       fonts:
+         - asset: assets/fonts/eurostile.TTF
+         - asset: assets/fonts/EuroStyle Normal.ttf
   #   - family: Schyler
   #     fonts:
   #       - asset: fonts/Schyler-Regular.ttf

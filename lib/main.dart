@@ -5,6 +5,7 @@ import 'package:kbAssistant/widget/userInfo.dart';
 
 import 'model/league.dart';
 import 'model/user.dart';
+import 'widget/budget.dart';
 
 void main() {
   runApp(KbAssistant());
@@ -41,6 +42,8 @@ class _MyHomePageState extends State<MyHomePage> {
 
   bool _isloggedIn = false;
 
+  Future<double> fetchedBudget;
+
   void _login(String username, String password) {
     Future<User> loggedInUser = kickbaseLogin(username, password);
 
@@ -51,18 +54,20 @@ class _MyHomePageState extends State<MyHomePage> {
     print(loggedInUser);
   }
 
-  void changeLeague(League league) {
+  void changeLeague(League league, String token) {
     setState(() {
       this.currentLeague = league;
+      this.fetchedBudget = fetchBudgetForLeague(league.id, token);
     });
   }
 
   @override
   Widget build(BuildContext context) {
     final appbar = AppBar(
+      backgroundColor: Colors.black,
         title: Text(
       "Der KB-Assi",
-      style: TextStyle(fontFamily: "Eurostile", fontSize: 26),
+      style: TextStyle(fontFamily: "Eurostile", fontSize: 26, fontWeight: FontWeight.bold),
       textAlign: TextAlign.right,
     ));
     final double netWidth = MediaQuery.of(context).size.width;
@@ -83,6 +88,18 @@ class _MyHomePageState extends State<MyHomePage> {
                         children: [
                           UserInfo(snapshot.data, currentLeague, changeLeague,
                               netWidth),
+                          FutureBuilder<double>(
+                            future: fetchedBudget,
+                            builder: (context, snapshot) {
+                              print(snapshot);
+                              if (snapshot.hasData) {
+                                return Budget(snapshot.data, netHeight);
+                              } else if (snapshot.hasError) {
+                                return Text("${snapshot.error}");
+                              }
+                              return CircularProgressIndicator();
+                            },
+                          ),
                         ],
                       );
                     } else if (snapshot.hasError) {

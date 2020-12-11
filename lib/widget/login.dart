@@ -46,10 +46,11 @@ class _LoginPageState extends State<LoginPage> {
           Container(
             width: 0.8 * widget.width,
             child: RaisedButton(
+              color: Colors.black,
               onPressed: () {
                 widget._login(usernameController.text, passwordController.text);
               },
-              child: Text("Login"),
+              child: Text("Login", style: TextStyle(fontFamily: 'Eurostile', color: Colors.white, fontSize: widget.height *0.03, fontWeight: FontWeight.bold),),
             ),
           ),
         ],
