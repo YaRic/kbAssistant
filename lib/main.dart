@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:kbAssistant/connector/kickbase.dart';
 import 'package:kbAssistant/widget/login.dart';
+import 'package:kbAssistant/widget/playerlist.dart';
 import 'package:kbAssistant/widget/userInfo.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'model/league.dart';
 import 'model/user.dart';
@@ -38,8 +39,8 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  final _mioFormat = new NumberFormat.compact(locale: 'de_DE');
-  final _kFormat = new NumberFormat("###,###", "de_DE");
+  String cacheUsername;
+  String cachePassword;
 
   Future<User> _currentUser;
 
@@ -59,11 +60,48 @@ class _MyHomePageState extends State<MyHomePage> {
     setState(() {
       this._currentUser = loggedInUser;
       this._isloggedIn = true;
+      _setCache(username, password);
     });
     return loggedInUser;
   }
 
-  void changeLeague(League league, String token, String username) {
+  void logout() {
+    setState(() {
+      _setCache("", "");
+      _isloggedIn = false;
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _loadCache().then((result) {
+      if ((cacheUsername != "" && cachePassword != "") &&
+          (cacheUsername != null && cachePassword != null)) {
+        _login(cacheUsername, cachePassword).then((result) {
+          changeLeague(result.leagues[0], result.accessToken, result.username,
+              result.coverimageURL);
+        });
+      }
+    });
+  }
+
+  _loadCache() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    cacheUsername = (prefs.getString('username') ?? "");
+    cachePassword = (prefs.getString('password') ?? "");
+  }
+
+  _setCache(String username, String password) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    cacheUsername = username;
+    cachePassword = password;
+    prefs.setString('username', cacheUsername);
+    prefs.setString('password', cachePassword);
+  }
+
+  void changeLeague(
+      League league, String token, String username, String coverimageURL) {
     setState(() {
       this.currentLeague = league;
       this.fetchedBudget = fetchBudgetForLeague(league.id, token);
@@ -93,15 +131,22 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     final appbar = AppBar(
-        backgroundColor: Colors.black,
-        title: Text(
-          "Der KB-Assi",
-          style: TextStyle(
-              fontFamily: "Eurostile",
-              fontSize: 26,
-              fontWeight: FontWeight.bold),
-          textAlign: TextAlign.right,
-        ));
+      backgroundColor: Colors.black,
+      title: Text(
+        "Der KB-Assi",
+        style: TextStyle(
+            fontFamily: "Eurostile", fontSize: 26, fontWeight: FontWeight.bold),
+        textAlign: TextAlign.right,
+      ),
+      actions: [
+        new IconButton(
+          icon: new Icon(Icons.logout),
+          onPressed: () {
+            logout();
+          },
+        ),
+      ],
+    );
     final double netWidth = MediaQuery.of(context).size.width;
     final double netHeight = (MediaQuery.of(context).size.height -
         appbar.preferredSize.height -
@@ -128,7 +173,12 @@ class _MyHomePageState extends State<MyHomePage> {
                                 return Budget((snapshot.data + getSumToSell()),
                                     netHeight);
                               } else if (snapshot.hasError) {
-                                return Text("${snapshot.error}");
+                                return Text(
+                                  "Budget nicht verfügbar",
+                                  style: TextStyle(
+                                    color: Colors.red,
+                                  ),
+                                );
                               }
                               return CircularProgressIndicator();
                             },
@@ -137,52 +187,11 @@ class _MyHomePageState extends State<MyHomePage> {
                             future: fetchedPlayers,
                             builder: (context, snapshot) {
                               if (snapshot.hasData) {
-                                // Next step: Extract this widget in a custom widget and try to play around with set value
-                                return Container(
-                                  height: netHeight * 0.75,
-                                  child: ListView.builder(
-                                    itemBuilder: (ctx, index) {
-                                      return Card(
-                                        elevation: 5,
-                                        margin: EdgeInsets.symmetric(
-                                          vertical: 8,
-                                          horizontal: 5,
-                                        ),
-                                        child: ListTile(
-                                          leading: CircleAvatar(
-                                            radius: netWidth * 0.06,
-                                            backgroundImage: NetworkImage(
-                                                snapshot.data[index].coverURL),
-                                          ),
-                                          title: Text(
-                                              "${snapshot.data[index].lastName}"),
-                                          subtitle: snapshot.data[index]
-                                                      .offers[0].price >
-                                                  1000000
-                                              ? Text("Angebot: " +
-                                                  _mioFormat.format(snapshot
-                                                      .data[index]
-                                                      .offers[0]
-                                                      .price) +
-                                                  " €")
-                                              : Text("Angebot: " +
-                                                  _kFormat.format(snapshot
-                                                      .data[index]
-                                                      .offers[0]
-                                                      .price / 1000) +
-                                                  "k €"),
-                                          trailing: Checkbox(
-                                              value: toSell.contains(
-                                                  snapshot.data[index]),
-                                              onChanged: (_) {
-                                                checkPlayer(
-                                                    snapshot.data[index]);
-                                              }),
-                                        ),
-                                      );
-                                    },
-                                    itemCount: snapshot.data.length,
-                                  ),
+                                return PlayerList(
+                                  height: 0.75 * netHeight,
+                                  allplayers: snapshot.data,
+                                  toSell: toSell,
+                                  checkPlayer: checkPlayer,
                                 );
                               } else if (snapshot.hasError) {
                                 return Text("${snapshot.error}");
@@ -193,7 +202,15 @@ class _MyHomePageState extends State<MyHomePage> {
                         ],
                       );
                     } else if (snapshot.hasError) {
-                      return Text("${snapshot.error}");
+                      return Column(children: [
+                        Text(
+                          "Login fehlgeschlagen",
+                          style: TextStyle(
+                            color: Colors.red,
+                          ),
+                        ),
+                        LoginPage(_login, changeLeague, netWidth, netHeight)
+                      ]);
                     }
 
                     return CircularProgressIndicator();

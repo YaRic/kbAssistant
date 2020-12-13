@@ -63,12 +63,8 @@ List<Player> parsePlayerListFromMarketCall(json, String username) {
   List<Player> result = list.map((entry) {
     Player currentEntry = Player.fromJson(entry);
     if (currentEntry.ownerUsername == username) {
-      print(
-          '${currentEntry.firstName} ${currentEntry.lastName} from ${currentEntry.ownerUsername} was added');
       return currentEntry;
     }
-    print(
-        '${currentEntry.firstName} ${currentEntry.lastName} from ${currentEntry.ownerUsername} was not added');
   }).toList();
 
   result.removeWhere(

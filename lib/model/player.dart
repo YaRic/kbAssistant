@@ -46,7 +46,7 @@ class Player {
       offers = parseOffers(json['offers']);
     } else {
       List<Offer> fakeList = new List<Offer>();
-      Offer fakeOffer = new Offer(price: 1.0, validUntil: new DateTime(2020));
+      Offer fakeOffer = new Offer(price: 0, validUntil: new DateTime(2020));
       fakeList.add(fakeOffer);
       offers = fakeList;
     }
