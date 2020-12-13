@@ -23,16 +23,17 @@ class Budget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
+      height: _height,
       padding: EdgeInsets.only(
-        top: _height * 0.02,
-        bottom: _height * 0.02,
+        top: _height * 0.12,
+        bottom: _height * 0.12,
       ),
       child: Text("Kontostand: " + 
         _euroFormatGerman.format(_budget) + " €",
         style: TextStyle(
           color: getcolor(_budget),
           fontFamily: 'Eurostile',
-          fontSize: _height * 0.03,
+          fontSize: _height * 0.6,
           fontWeight: FontWeight.w900,
         ),
       ),

@@ -12,11 +12,14 @@ class UserInfo extends StatelessWidget {
 
   final double width;
 
-  UserInfo(this.user, this.currentLeague, this.changeLeague, this.width);
+  final double height;
+
+  UserInfo(this.user, this.currentLeague, this.changeLeague, this.width, this.height);
 
   @override
   Widget build(BuildContext context) {
     return Container(
+      height: height,
       color: Colors.black,
       child: Row(
         children: [

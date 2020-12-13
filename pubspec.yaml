@@ -30,6 +30,11 @@ dependencies:
 
   shared_preferences: "^0.5.12+4"
 
+  liquid_pull_to_refresh: ^2.0.0
+
+  swipebuttonflutter: ^0.1.2
+
+
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.

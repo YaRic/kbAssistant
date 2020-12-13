@@ -4,6 +4,7 @@ import 'package:kbAssistant/widget/login.dart';
 import 'package:kbAssistant/widget/playerlist.dart';
 import 'package:kbAssistant/widget/userInfo.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:swipebuttonflutter/swipebuttonflutter.dart';
 
 import 'model/league.dart';
 import 'model/user.dart';
@@ -14,14 +15,30 @@ void main() {
   runApp(KbAssistant());
 }
 
+const MaterialColor primaryBlack = MaterialColor(
+  _blackPrimaryValue,
+  <int, Color>{
+    50: Color(0xFF000000),
+    100: Color(0xFF000000),
+    200: Color(0xFF000000),
+    300: Color(0xFF000000),
+    400: Color(0xFF000000),
+    500: Color(_blackPrimaryValue),
+    600: Color(0xFF000000),
+    700: Color(0xFF000000),
+    800: Color(0xFF000000),
+    900: Color(0xFF000000),
+  },
+);
+const int _blackPrimaryValue = 0xFF000000;
+
 class KbAssistant extends StatelessWidget {
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Your Kickbase Assistant',
       theme: ThemeData(
-        primarySwatch: Colors.blueGrey,
+        primarySwatch: primaryBlack,
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
       home: MyHomePage(title: 'Your Kickbase Assistant'),
@@ -39,7 +56,7 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  String cacheUsername;
+  String cacheMail;
   String cachePassword;
 
   Future<User> _currentUser;
@@ -54,15 +71,23 @@ class _MyHomePageState extends State<MyHomePage> {
 
   List<Player> toSell = new List<Player>();
 
-  Future<User> _login(String username, String password) async {
-    Future<User> loggedInUser = kickbaseLogin(username, password);
+  Future<User> _login(String mail, String password) async {
+    Future<User> loggedInUser = kickbaseLogin(mail, password);
 
     setState(() {
       this._currentUser = loggedInUser;
       this._isloggedIn = true;
-      _setCache(username, password);
+      _setCache(mail, password);
     });
     return loggedInUser;
+  }
+
+  Future<void> refresh() async {
+    _login(cacheMail, cachePassword).then((result) => changeLeague(
+        result.leagues[0],
+        result.accessToken,
+        result.username,
+        result.coverimageURL));
   }
 
   void logout() {
@@ -76,9 +101,9 @@ class _MyHomePageState extends State<MyHomePage> {
   void initState() {
     super.initState();
     _loadCache().then((result) {
-      if ((cacheUsername != "" && cachePassword != "") &&
-          (cacheUsername != null && cachePassword != null)) {
-        _login(cacheUsername, cachePassword).then((result) {
+      if ((cacheMail != "" && cachePassword != "") &&
+          (cacheMail != null && cachePassword != null)) {
+        _login(cacheMail, cachePassword).then((result) {
           changeLeague(result.leagues[0], result.accessToken, result.username,
               result.coverimageURL);
         });
@@ -88,15 +113,15 @@ class _MyHomePageState extends State<MyHomePage> {
 
   _loadCache() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    cacheUsername = (prefs.getString('username') ?? "");
+    cacheMail = (prefs.getString('mail') ?? "");
     cachePassword = (prefs.getString('password') ?? "");
   }
 
-  _setCache(String username, String password) async {
+  _setCache(String mail, String password) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    cacheUsername = username;
+    cacheMail = mail;
     cachePassword = password;
-    prefs.setString('username', cacheUsername);
+    prefs.setString('mail', cacheMail);
     prefs.setString('password', cachePassword);
   }
 
@@ -164,14 +189,14 @@ class _MyHomePageState extends State<MyHomePage> {
                       return Column(
                         children: [
                           UserInfo(snapshot.data, currentLeague, changeLeague,
-                              netWidth),
+                              netWidth, netHeight * 0.1),
                           FutureBuilder<double>(
                             future: fetchedBudget,
                             builder: (context, snapshot) {
                               print(snapshot);
                               if (snapshot.hasData) {
                                 return Budget((snapshot.data + getSumToSell()),
-                                    netHeight);
+                                    netHeight * 0.06);
                               } else if (snapshot.hasError) {
                                 return Text(
                                   "Budget nicht verfügbar",
@@ -188,17 +213,72 @@ class _MyHomePageState extends State<MyHomePage> {
                             builder: (context, snapshot) {
                               if (snapshot.hasData) {
                                 return PlayerList(
-                                  height: 0.75 * netHeight,
+                                  height: 0.72 * netHeight,
                                   allplayers: snapshot.data,
                                   toSell: toSell,
                                   checkPlayer: checkPlayer,
+                                  refreshFunction: refresh,
                                 );
                               } else if (snapshot.hasError) {
                                 return Text("${snapshot.error}");
                               }
                               return CircularProgressIndicator();
                             },
-                          )
+                          ),
+                          Column(
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              children: [
+                                (toSell.length > 0) ? Container(
+                                  width: 0.95 * netWidth,
+                                  child: SwipingButton(
+                                    
+                                    text: "verkaufen",
+                                    onSwipeCallback: () {
+                                      showDialog(
+                                        context: context,
+                                        builder: (BuildContext context) {
+                                          return AlertDialog(
+                                            title: Text(
+                                                "Willst du folgende Spieler wirklich verkaufen?"),
+                                            content: Column(
+                                                children: toSell
+                                                    .map(
+                                                        (e) => Text(e.lastName))
+                                                    .toList()),
+                                            actions: [
+                                              FlatButton(
+                                                  child: Text('Abbrechen'),
+                                                  onPressed: () {
+                                                    // Hier passiert etwas
+                                                    Navigator.of(context).pop();
+                                                  }),
+                                              FlatButton(
+                                                child: Text('Bestätigen'),
+                                                onPressed: () {
+                                                  // Hier passiert etwas anderes
+                                                  Navigator.of(context).pop();
+                                                },
+                                              ),
+                                            ],
+                                          );
+                                        },
+                                      );
+                                    },
+                                    height: netHeight * 0.06,  
+                                    backgroundColor: Colors.black,
+                                    swipeButtonColor: Colors.white,
+                                    iconColor: Colors.black,
+                                    swipePercentageNeeded: 0.95,
+                                    padding: EdgeInsets.only(top: (netHeight * 0.03),),
+                                    buttonTextStyle: TextStyle(
+                                        fontFamily: 'Eurostile',
+                                        fontWeight: FontWeight.bold),
+                                  ),
+                                ): Padding(
+                                  padding: EdgeInsets.only(top: (netHeight * 0.04)),
+                                  child: Text("Wähle Spieler aus um sie zu verkaufen", style: TextStyle(fontSize: netHeight * 0.06 * 0.4, fontFamily: 'Eurostile', fontWeight: FontWeight.bold),),
+                                ),
+                              ]),
                         ],
                       );
                     } else if (snapshot.hasError) {
