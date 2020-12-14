@@ -34,6 +34,10 @@ dependencies:
 
   swipebuttonflutter: ^0.1.2
 
+  flutter_launcher_icons: "^0.7.0"  
+  
+  flutter_launcher_name: "^0.0.1"
+
 
 
   # The following adds the Cupertino Icons font to your application.
@@ -43,6 +47,15 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
+
+
+flutter_icons:
+  ios: true
+  android: "launcher_icon"
+  image_path: "assets/images/LogoKBAssi.png"
+
+flutter_launcher_name:
+  name: "KB Assi"
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
@@ -56,9 +69,8 @@ flutter:
   uses-material-design: true
 
   # To add assets to your application, add an assets section, like this:
-  # assets:
-  #   - images/a_dot_burr.jpeg
-  #   - images/a_dot_ham.jpeg
+  assets:
+    - assets/images/LogoKBAssi.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.

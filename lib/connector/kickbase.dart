@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:http/http.dart' as http;
+import 'package:kbAssistant/model/placements.dart';
 import '../model/player.dart';
 import '../model/user.dart';
 
@@ -43,7 +44,8 @@ double parseBudgetFromLeagueMeCall(json) {
   return double.parse(stringResult);
 }
 
-Future<List<Player>> fetchPlayerForLeagueFromUser(String leagueId, String username, String token) async {
+Future<List<Player>> fetchPlayerForLeagueFromUser(
+    String leagueId, String username, String token) async {
   final response = await http.get(
       'https://api.kickbase.com/leagues/${leagueId}/market',
       headers: {HttpHeaders.cookieHeader: "kkstrauth=${token};"});
@@ -67,7 +69,48 @@ List<Player> parsePlayerListFromMarketCall(json, String username) {
     }
   }).toList();
 
-  result.removeWhere(
-      (element) => (element == null));
+  result.removeWhere((element) => (element == null));
+  return result;
+}
+
+Future<Placements> fetchPlacements(String leagueId, String token) async {
+  final response = await http.get(
+      'https://api.kickbase.com/leagues/${leagueId}/stats',
+      headers: {HttpHeaders.cookieHeader: "kkstrauth=${token};"});
+
+  if (response.statusCode == 200) {
+    return Placements.fromJson(jsonDecode(response.body));
+  } else {
+    // If the server did not return a 200 OK response,
+    // then throw an exception.
+    throw Exception('Failed to fetch placements for league');
+  }
+}
+
+Future<List<User>> fetchLeagueUser(String leagueId, String token) async {
+  final response = await http.get(
+      'https://api.kickbase.com/leagues/${leagueId}/users',
+      headers: {HttpHeaders.cookieHeader: "kkstrauth=${token};"});
+
+  if (response.statusCode == 200) {
+    return parseUserList(jsonDecode(response.body));
+  } else {
+    // If the server did not return a 200 OK response,
+    // then throw an exception.
+    throw Exception('Failed to fetch placements for league');
+  }
+}
+
+List<User> parseUserList(json) {
+  var list = json['users'] as List;
+
+  List<User> result = list.map((entry) {
+    return new User(
+      userID: entry['id'],
+      username: entry['name'],
+      coverimageURL: entry['profile'],
+    );
+  }).toList();
+  //result.removeWhere((element) => (element == null));
   return result;
 }

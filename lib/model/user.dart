@@ -1,8 +1,12 @@
 import 'dart:convert';
 
+import 'package:kbAssistant/connector/kickbase.dart';
+
 import 'league.dart';
 
 class User {
+  String userID;
+
   String username;
 
   String coverimageURL;
@@ -12,6 +16,7 @@ class User {
   String accessToken;
 
   User({
+    this.userID,
     this.username,
     this.coverimageURL,
     this.leagues,
@@ -44,4 +49,5 @@ class User {
     }).toList();
     return leagueList;
   }
+
 }

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:kbAssistant/connector/kickbase.dart';
+import 'package:kbAssistant/model/placements.dart';
 import 'package:kbAssistant/widget/login.dart';
+import 'package:kbAssistant/widget/paymentList.dart';
 import 'package:kbAssistant/widget/playerlist.dart';
 import 'package:kbAssistant/widget/userInfo.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -69,6 +71,8 @@ class _MyHomePageState extends State<MyHomePage> {
 
   Future<List<Player>> fetchedPlayers;
 
+  Future<Placements> fetchedPlacements;
+
   List<Player> toSell = new List<Player>();
 
   Future<User> _login(String mail, String password) async {
@@ -83,6 +87,7 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   Future<void> refresh() async {
+    toSell.clear();
     _login(cacheMail, cachePassword).then((result) => changeLeague(
         result.leagues[0],
         result.accessToken,
@@ -132,6 +137,7 @@ class _MyHomePageState extends State<MyHomePage> {
       this.fetchedBudget = fetchBudgetForLeague(league.id, token);
       this.fetchedPlayers =
           fetchPlayerForLeagueFromUser(league.id, username, token);
+      this.fetchedPlacements = fetchPlacements(league.id, token);
     });
   }
 
@@ -155,6 +161,11 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
+    final tabs = ["+- Rechner", "Zahl-Liste", "MW-Steigerung"];
+    final double netWidth = MediaQuery.of(context).size.width;
+    final double height = (MediaQuery.of(context).size.height -
+        MediaQuery.of(context).padding.top);
+
     final appbar = AppBar(
       backgroundColor: Colors.black,
       title: Text(
@@ -163,139 +174,209 @@ class _MyHomePageState extends State<MyHomePage> {
             fontFamily: "Eurostile", fontSize: 26, fontWeight: FontWeight.bold),
         textAlign: TextAlign.right,
       ),
+      bottom: TabBar(
+        indicatorColor: Colors.white,
+        isScrollable: true,
+        tabs: [
+          for (final tab in tabs)
+            Center(
+              child: Text(
+                tab,
+                style: TextStyle(fontFamily: 'Eurostile', fontSize: 18),
+              ),
+            ),
+        ],
+      ),
       actions: [
-        new IconButton(
-          icon: new Icon(Icons.logout),
-          onPressed: () {
-            logout();
-          },
+        Visibility(
+          visible: _isloggedIn,
+          child: new IconButton(
+            icon: new Icon(Icons.logout),
+            onPressed: () {
+              logout();
+            },
+          ),
         ),
       ],
     );
-    final double netWidth = MediaQuery.of(context).size.width;
-    final double netHeight = (MediaQuery.of(context).size.height -
-        appbar.preferredSize.height -
-        MediaQuery.of(context).padding.top);
 
-    return Scaffold(
-        appBar: appbar,
-        body: Center(
-          child: (!_isloggedIn)
-              ? LoginPage(_login, changeLeague, netWidth, netHeight)
-              : FutureBuilder<User>(
-                  future: _currentUser,
-                  builder: (context, snapshot) {
-                    if (snapshot.hasData) {
-                      return Column(
-                        children: [
-                          UserInfo(snapshot.data, currentLeague, changeLeague,
-                              netWidth, netHeight * 0.1),
-                          FutureBuilder<double>(
-                            future: fetchedBudget,
-                            builder: (context, snapshot) {
-                              print(snapshot);
-                              if (snapshot.hasData) {
-                                return Budget((snapshot.data + getSumToSell()),
-                                    netHeight * 0.06);
-                              } else if (snapshot.hasError) {
-                                return Text(
-                                  "Budget nicht verfügbar",
-                                  style: TextStyle(
-                                    color: Colors.red,
-                                  ),
-                                );
-                              }
-                              return CircularProgressIndicator();
-                            },
-                          ),
-                          FutureBuilder(
-                            future: fetchedPlayers,
-                            builder: (context, snapshot) {
-                              if (snapshot.hasData) {
-                                return PlayerList(
-                                  height: 0.72 * netHeight,
-                                  allplayers: snapshot.data,
-                                  toSell: toSell,
-                                  checkPlayer: checkPlayer,
-                                  refreshFunction: refresh,
-                                );
-                              } else if (snapshot.hasError) {
-                                return Text("${snapshot.error}");
-                              }
-                              return CircularProgressIndicator();
-                            },
-                          ),
-                          Column(
-                              mainAxisAlignment: MainAxisAlignment.end,
-                              children: [
-                                (toSell.length > 0) ? Container(
-                                  width: 0.95 * netWidth,
-                                  child: SwipingButton(
-                                    
-                                    text: "verkaufen",
-                                    onSwipeCallback: () {
-                                      showDialog(
-                                        context: context,
-                                        builder: (BuildContext context) {
-                                          return AlertDialog(
-                                            title: Text(
-                                                "Willst du folgende Spieler wirklich verkaufen?"),
-                                            content: Column(
-                                                children: toSell
-                                                    .map(
-                                                        (e) => Text(e.lastName))
-                                                    .toList()),
-                                            actions: [
-                                              FlatButton(
-                                                  child: Text('Abbrechen'),
-                                                  onPressed: () {
-                                                    // Hier passiert etwas
-                                                    Navigator.of(context).pop();
-                                                  }),
-                                              FlatButton(
-                                                child: Text('Bestätigen'),
-                                                onPressed: () {
-                                                  // Hier passiert etwas anderes
-                                                  Navigator.of(context).pop();
-                                                },
-                                              ),
-                                            ],
+    final double netHeight = (height - appbar.preferredSize.height);
+
+    return DefaultTabController(
+      length: tabs.length,
+      child: Scaffold(
+          appBar: appbar,
+          body: Center(
+            child: (!_isloggedIn)
+                ? LoginPage(_login, changeLeague, netWidth, netHeight)
+                : FutureBuilder<User>(
+                    future: _currentUser,
+                    builder: (context, snapshot) {
+                      if (snapshot.hasData) {
+                        return Column(
+                          children: [
+                            UserInfo(snapshot.data, currentLeague, changeLeague,
+                                netWidth, netHeight * 0.1),
+                            Container(
+                              height: netHeight * 0.9,
+                              width: netWidth,
+                              child: TabBarView(
+                                children: [
+                                  Column(children: [
+                                    FutureBuilder<double>(
+                                      future: fetchedBudget,
+                                      builder: (context, snapshot) {
+                                        print(snapshot);
+                                        if (snapshot.hasData) {
+                                          return Budget(
+                                              (snapshot.data + getSumToSell()),
+                                              netHeight * 0.06);
+                                        } else if (snapshot.hasError) {
+                                          return Text(
+                                            "Budget nicht verfügbar",
+                                            style: TextStyle(
+                                              color: Colors.red,
+                                            ),
                                           );
-                                        },
-                                      );
+                                        }
+                                        return CircularProgressIndicator();
+                                      },
+                                    ),
+                                    FutureBuilder(
+                                      future: fetchedPlayers,
+                                      builder: (context, snapshot) {
+                                        if (snapshot.hasData) {
+                                          return PlayerList(
+                                            height: 0.72 * netHeight,
+                                            allplayers: snapshot.data,
+                                            toSell: toSell,
+                                            checkPlayer: checkPlayer,
+                                            refreshFunction: refresh,
+                                          );
+                                        } else if (snapshot.hasError) {
+                                          return Text("${snapshot.error}");
+                                        }
+                                        return CircularProgressIndicator();
+                                      },
+                                    ),
+                                    Column(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.end,
+                                        children: [
+                                          (toSell.length > 0)
+                                              ? Container(
+                                                  width: 0.95 * netWidth,
+                                                  child: SwipingButton(
+                                                    text: "verkaufen",
+                                                    onSwipeCallback: () {
+                                                      showDialog(
+                                                        context: context,
+                                                        builder: (BuildContext
+                                                            context) {
+                                                          return AlertDialog(
+                                                            title: Text(
+                                                                "Willst du folgende Spieler wirklich verkaufen?"),
+                                                            content: Column(
+                                                                children: toSell
+                                                                    .map((e) =>
+                                                                        Text(e
+                                                                            .lastName))
+                                                                    .toList()),
+                                                            actions: [
+                                                              FlatButton(
+                                                                  child: Text(
+                                                                      'Abbrechen'),
+                                                                  onPressed:
+                                                                      () {
+                                                                    // Hier passiert etwas
+                                                                    Navigator.of(
+                                                                            context)
+                                                                        .pop();
+                                                                  }),
+                                                              FlatButton(
+                                                                child: Text(
+                                                                    'Bestätigen'),
+                                                                onPressed: () {
+                                                                  // Hier passiert etwas anderes
+                                                                  Navigator.of(
+                                                                          context)
+                                                                      .pop();
+                                                                },
+                                                              ),
+                                                            ],
+                                                          );
+                                                        },
+                                                      );
+                                                    },
+                                                    height: netHeight * 0.06,
+                                                    backgroundColor:
+                                                        Colors.black,
+                                                    swipeButtonColor:
+                                                        Colors.white,
+                                                    iconColor: Colors.black,
+                                                    swipePercentageNeeded: 0.9,
+                                                    padding: EdgeInsets.only(
+                                                      top: (netHeight * 0.03),
+                                                    ),
+                                                    buttonTextStyle: TextStyle(
+                                                        fontFamily: 'Eurostile',
+                                                        fontWeight:
+                                                            FontWeight.bold),
+                                                  ),
+                                                )
+                                              : Padding(
+                                                  padding: EdgeInsets.only(
+                                                      top: (netHeight * 0.04)),
+                                                  child: Text(
+                                                    "Wähle Spieler aus um sie zu verkaufen",
+                                                    style: TextStyle(
+                                                        fontSize: netHeight *
+                                                            0.06 *
+                                                            0.4,
+                                                        fontFamily: 'Eurostile',
+                                                        fontWeight:
+                                                            FontWeight.bold),
+                                                  ),
+                                                ),
+                                        ]),
+                                  ]),
+                                  FutureBuilder(
+                                    future: fetchedPlacements,
+                                    builder: (context, snapshot) {
+                                      if (snapshot.hasData) {
+                                        return PaymentList(placements: snapshot.data, height: 0.8 * netHeight);
+                                      } else if (snapshot.hasError) {
+                                        return Text("${snapshot.error}");
+                                      }
+                                      return CircularProgressIndicator();
                                     },
-                                    height: netHeight * 0.06,  
-                                    backgroundColor: Colors.black,
-                                    swipeButtonColor: Colors.white,
-                                    iconColor: Colors.black,
-                                    swipePercentageNeeded: 0.95,
-                                    padding: EdgeInsets.only(top: (netHeight * 0.03),),
-                                    buttonTextStyle: TextStyle(
-                                        fontFamily: 'Eurostile',
-                                        fontWeight: FontWeight.bold),
                                   ),
-                                ): Padding(
-                                  padding: EdgeInsets.only(top: (netHeight * 0.04)),
-                                  child: Text("Wähle Spieler aus um sie zu verkaufen", style: TextStyle(fontSize: netHeight * 0.06 * 0.4, fontFamily: 'Eurostile', fontWeight: FontWeight.bold),),
-                                ),
-                              ]),
-                        ],
-                      );
-                    } else if (snapshot.hasError) {
-                      return Column(children: [
-                        Text(
-                          "Login fehlgeschlagen",
-                          style: TextStyle(
-                            color: Colors.red,
+                                  Text(
+                                    "In Entwicklung",
+                                    style: TextStyle(
+                                        fontFamily: "Eurostile", fontSize: 22),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        );
+                      } else if (snapshot.hasError) {
+                        return Column(children: [
+                          Text(
+                            "Login fehlgeschlagen",
+                            style: TextStyle(
+                              color: Colors.red,
+                            ),
                           ),
-                        ),
-                        LoginPage(_login, changeLeague, netWidth, netHeight)
-                      ]);
-                    }
+                          LoginPage(_login, changeLeague, netWidth, netHeight)
+                        ]);
+                      }
 
-                    return CircularProgressIndicator();
-                  },
-                ),
-        ));
+                      return CircularProgressIndicator();
+                    },
+                  ),
+          )),
+    );
   }
 }
