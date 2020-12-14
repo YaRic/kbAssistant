@@ -8,8 +8,9 @@ import '../model/user.dart';
 class PaymentList extends StatefulWidget {
   final Placements placements;
   final double height;
+  final List<User> userlist;
 
-  const PaymentList({this.placements, this.height});
+  const PaymentList({this.placements, this.height, this.userlist});
 
   @override
   _PaymentListState createState() => _PaymentListState();
@@ -46,7 +47,10 @@ class _PaymentListState extends State<PaymentList> {
       payTable.update(md.table[md.table.length - 2].userID,
           (value) => value + paymentSumThirdLast);
     }
-    return payTable;
+    var sortedMap = Map.fromEntries(
+    payTable.entries.toList()
+    ..sort((e1, e2) => e2.value.compareTo(e1.value)));
+    return sortedMap;
   }
 
   @override
@@ -94,7 +98,11 @@ class _PaymentListState extends State<PaymentList> {
                 horizontal: 5,
               ),
               child: ListTile(
-                title: Text("${user}",
+                leading: CircleAvatar(
+                  radius: widget.height * 0.05,
+                  backgroundImage: NetworkImage("${widget.userlist.where((element) => element.userID == user).first.coverimageURL}"),
+                ),
+                title: Text("${widget.userlist.where((element) => element.userID == user).first.username}",
                     style: TextStyle(
                       fontSize: 22,
                       fontFamily: "Eurostile",

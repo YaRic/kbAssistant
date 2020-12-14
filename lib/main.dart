@@ -73,6 +73,10 @@ class _MyHomePageState extends State<MyHomePage> {
 
   Future<Placements> fetchedPlacements;
 
+  Future<List<User>> fetchedLeagueUsers;
+
+  List<User> userlist;
+
   List<Player> toSell = new List<Player>();
 
   Future<User> _login(String mail, String password) async {
@@ -138,6 +142,8 @@ class _MyHomePageState extends State<MyHomePage> {
       this.fetchedPlayers =
           fetchPlayerForLeagueFromUser(league.id, username, token);
       this.fetchedPlacements = fetchPlacements(league.id, token);
+      this.fetchedLeagueUsers = fetchLeagueUser(league.id, token)
+          .then((value) => this.userlist = value);
     });
   }
 
@@ -161,7 +167,10 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    final tabs = ["+- Rechner", "Zahl-Liste", "MW-Steigerung"];
+    var tabs = ["", "", ""];
+    if(_isloggedIn) {
+      tabs = ["+- Rechner", "Zahl-Liste", "MW-Steigerung"];
+    } 
     final double netWidth = MediaQuery.of(context).size.width;
     final double height = (MediaQuery.of(context).size.height -
         MediaQuery.of(context).padding.top);
@@ -344,7 +353,10 @@ class _MyHomePageState extends State<MyHomePage> {
                                     future: fetchedPlacements,
                                     builder: (context, snapshot) {
                                       if (snapshot.hasData) {
-                                        return PaymentList(placements: snapshot.data, height: 0.8 * netHeight);
+                                        return PaymentList(
+                                            placements: snapshot.data,
+                                            height: 0.8 * netHeight,
+                                            userlist: this.userlist);
                                       } else if (snapshot.hasError) {
                                         return Text("${snapshot.error}");
                                       }
