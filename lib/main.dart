@@ -168,9 +168,9 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     var tabs = ["", "", ""];
-    if(_isloggedIn) {
+    if (_isloggedIn) {
       tabs = ["+- Rechner", "Zahl-Liste", "MW-Steigerung"];
-    } 
+    }
     final double netWidth = MediaQuery.of(context).size.width;
     final double height = (MediaQuery.of(context).size.height -
         MediaQuery.of(context).padding.top);
@@ -230,6 +230,7 @@ class _MyHomePageState extends State<MyHomePage> {
                               height: netHeight * 0.9,
                               width: netWidth,
                               child: TabBarView(
+                                physics: NeverScrollableScrollPhysics(),
                                 children: [
                                   Column(children: [
                                     FutureBuilder<double>(
@@ -304,7 +305,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                                                   }),
                                                               FlatButton(
                                                                 child: Text(
-                                                                    'Bestätigen'),
+                                                                    'Bestätigen (geht noch nicht)'),
                                                                 onPressed: () {
                                                                   // Hier passiert etwas anderes
                                                                   Navigator.of(
