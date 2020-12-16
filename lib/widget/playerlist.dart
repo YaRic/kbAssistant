@@ -14,12 +14,16 @@ class PlayerList extends StatelessWidget {
 
   final Function refreshFunction;
 
-  PlayerList(
-      {this.height,
-      this.allplayers,
-      this.toSell,
-      this.checkPlayer,
-      this.refreshFunction});
+  String leagueId;
+
+  PlayerList({
+    this.height,
+    this.allplayers,
+    this.toSell,
+    this.checkPlayer,
+    this.refreshFunction,
+    this.leagueId,
+  });
 
   final _mioFormat = new NumberFormat.compact(locale: 'de_DE');
   final _kFormat = new NumberFormat("###,###", "de_DE");
@@ -27,12 +31,13 @@ class PlayerList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return LiquidPullToRefresh(
-      onRefresh: refreshFunction,
+      onRefresh: () {
+        return refreshFunction(leagueId);
+      },
       child: Container(
         height: height,
         child: ListView.builder(
           itemBuilder: (ctx, index) {
-            print("ID :" + allplayers[index].id + " Spieler: " +allplayers[index].lastName + " OfferID " + allplayers[index].offers[0].id);
             return Card(
               elevation: 5,
               margin: EdgeInsets.symmetric(

@@ -97,7 +97,17 @@ class _PaymentListState extends State<PaymentList> {
     list.forEach((key, value) {
       print(key + " zahlt " + value.toString() + " €");
     });
-    if (list.length < 3) return Text("Liga zu klein");
+    if (list.length < 3)
+      return Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Text(
+          "Liga zu klein um eine Zahlliste berechnen zu können",
+          style: TextStyle(
+            fontFamily: "Eurostile",
+            fontSize: 23,
+          ),
+        ),
+      );
 
     return Column(children: [
       Row(

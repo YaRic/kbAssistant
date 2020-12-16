@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:kbAssistant/connector/kickbase.dart';
 import 'package:kbAssistant/model/placements.dart';
 import 'package:kbAssistant/widget/login.dart';
+import 'package:kbAssistant/widget/marketValueIncrease.dart';
 import 'package:kbAssistant/widget/paymentList.dart';
 import 'package:kbAssistant/widget/playerlist.dart';
 import 'package:kbAssistant/widget/userInfo.dart';
@@ -92,10 +93,13 @@ class _MyHomePageState extends State<MyHomePage> {
     return loggedInUser;
   }
 
-  Future<void> refresh() async {
+  Future<void> refresh(String leagueId) async {
     toSell.clear();
     _login(cacheMail, cachePassword).then((result) {
-      changeLeague(result.leagues[0], result.accessToken, result.username,
+      changeLeague(
+          result.leagues.where((element) => element.id == leagueId).first,
+          result.accessToken,
+          result.username,
           result.coverimageURL);
     });
   }
@@ -270,6 +274,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                             toSell: toSell,
                                             checkPlayer: checkPlayer,
                                             refreshFunction: refresh,
+                                            leagueId: currentLeague.id,
                                           );
                                         } else if (snapshot.hasError) {
                                           return Text("${snapshot.error}");
@@ -322,7 +327,9 @@ class _MyHomePageState extends State<MyHomePage> {
                                                                   Navigator.of(
                                                                           context)
                                                                       .pop();
-                                                                  refresh();
+                                                                  refresh(
+                                                                      currentLeague
+                                                                          .id);
                                                                 },
                                                               ),
                                                             ],
@@ -378,10 +385,20 @@ class _MyHomePageState extends State<MyHomePage> {
                                       return CircularProgressIndicator();
                                     },
                                   ),
-                                  Text(
-                                    "In Entwicklung",
-                                    style: TextStyle(
-                                        fontFamily: "Eurostile", fontSize: 22),
+                                  FutureBuilder(
+                                    future: fetchedPlayers,
+                                    builder: (context, snapshot) {
+                                      if (snapshot.hasData) {
+                                        return MarketValueIncrease(
+                                            allPlayers: snapshot.data,
+                                            height: netHeight * 0.8,
+                                            leagueId: currentLeague.id,
+                                            token: currentToken);
+                                      } else if (snapshot.hasError) {
+                                        return Text("${snapshot.error}");
+                                      }
+                                      return CircularProgressIndicator();
+                                    },
                                   ),
                                 ],
                               ),

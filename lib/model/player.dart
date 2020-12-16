@@ -1,3 +1,7 @@
+import 'package:kbAssistant/model/player.dart';
+import '../connector/kickbase.dart';
+
+
 import './offer.dart';
 
 class Player {
@@ -17,16 +21,18 @@ class Player {
 
   bool toSell;
 
-  Player({
-    this.id,
-    this.firstName,
-    this.lastName,
-    this.ownerUsername,
-    this.marketvalue,
-    this.offers,
-    this.coverURL,
-    this.toSell = false,
-  });
+  double boughtFor;
+
+  Player(
+      {this.id,
+      this.firstName,
+      this.lastName,
+      this.ownerUsername,
+      this.marketvalue,
+      this.offers,
+      this.coverURL,
+      this.toSell = false,
+      this.boughtFor});
 
   factory Player.fromJson(Map<String, dynamic> json) {
     String username;
@@ -63,6 +69,7 @@ class Player {
       coverURL: coverURL,
     );
   }
+
 
   static List<Offer> parseOffers(offerjson) {
     var list = offerjson as List;
