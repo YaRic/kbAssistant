@@ -14,7 +14,12 @@ class UserInfo extends StatelessWidget {
 
   final double height;
 
-  UserInfo(this.user, this.currentLeague, this.changeLeague, this.width, this.height);
+  UserInfo(
+      {this.user,
+      this.currentLeague,
+      this.changeLeague,
+      this.width,
+      this.height});
 
   @override
   Widget build(BuildContext context) {
@@ -51,7 +56,8 @@ class UserInfo extends StatelessWidget {
                       fontFamily: 'Eurostile',
                       fontWeight: FontWeight.bold),
                   onChanged: (League newValue) {
-                    changeLeague(newValue, user.accessToken, user.username);
+                    changeLeague(newValue, user.accessToken, user.username,
+                        user.coverimageURL);
                   },
                   items: user.leagues
                       .map<DropdownMenuItem<League>>((League league) {

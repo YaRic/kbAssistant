@@ -36,6 +36,9 @@ class _PaymentListState extends State<PaymentList> {
     Map<String, double> payTable = new Map<String, double>();
 
     for (var md in widget.placements.matchdays) {
+      if (md.table.length < 3) {
+        return {'Liga zu klein': 0};
+      }
       payTable.putIfAbsent((md.table[md.table.length].userID), () => 0);
       payTable.putIfAbsent((md.table[md.table.length - 1].userID), () => 0);
       payTable.putIfAbsent((md.table[md.table.length - 2].userID), () => 0);
@@ -47,9 +50,8 @@ class _PaymentListState extends State<PaymentList> {
       payTable.update(md.table[md.table.length - 2].userID,
           (value) => value + paymentSumThirdLast);
     }
-    var sortedMap = Map.fromEntries(
-    payTable.entries.toList()
-    ..sort((e1, e2) => e2.value.compareTo(e1.value)));
+    var sortedMap = Map.fromEntries(payTable.entries.toList()
+      ..sort((e1, e2) => e2.value.compareTo(e1.value)));
     return sortedMap;
   }
 
@@ -67,6 +69,7 @@ class _PaymentListState extends State<PaymentList> {
     list.forEach((key, value) {
       print(key + " zahlt " + value.toString() + " €");
     });
+    if (list.length < 3) return Text("Liga zu klein");
 
     return Column(children: [
       Row(
@@ -100,9 +103,11 @@ class _PaymentListState extends State<PaymentList> {
               child: ListTile(
                 leading: CircleAvatar(
                   radius: widget.height * 0.05,
-                  backgroundImage: NetworkImage("${widget.userlist.where((element) => element.userID == user).first.coverimageURL}"),
+                  backgroundImage: NetworkImage(
+                      "${widget.userlist.where((element) => element.userID == user).first.coverimageURL}"),
                 ),
-                title: Text("${widget.userlist.where((element) => element.userID == user).first.username}",
+                title: Text(
+                    "${widget.userlist.where((element) => element.userID == user).first.username}",
                     style: TextStyle(
                       fontSize: 22,
                       fontFamily: "Eurostile",

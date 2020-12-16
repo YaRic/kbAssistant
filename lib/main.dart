@@ -224,8 +224,12 @@ class _MyHomePageState extends State<MyHomePage> {
                       if (snapshot.hasData) {
                         return Column(
                           children: [
-                            UserInfo(snapshot.data, currentLeague, changeLeague,
-                                netWidth, netHeight * 0.1),
+                            UserInfo(
+                                user: snapshot.data,
+                                currentLeague: currentLeague,
+                                changeLeague: changeLeague,
+                                width: netWidth,
+                                height: netHeight * 0.1),
                             Container(
                               height: netHeight * 0.9,
                               width: netWidth,
