@@ -1,6 +1,8 @@
 import './offer.dart';
 
 class Player {
+  String id;
+
   String firstName;
 
   String lastName;
@@ -16,6 +18,7 @@ class Player {
   bool toSell;
 
   Player({
+    this.id,
     this.firstName,
     this.lastName,
     this.ownerUsername,
@@ -51,6 +54,7 @@ class Player {
       offers = fakeList;
     }
     return Player(
+      id: json['id'],
       firstName: json['firstName'],
       lastName: json['lastName'],
       ownerUsername: username,

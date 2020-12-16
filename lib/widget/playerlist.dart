@@ -32,6 +32,7 @@ class PlayerList extends StatelessWidget {
         height: height,
         child: ListView.builder(
           itemBuilder: (ctx, index) {
+            print("ID :" + allplayers[index].id + " Spieler: " +allplayers[index].lastName + " OfferID " + allplayers[index].offers[0].id);
             return Card(
               elevation: 5,
               margin: EdgeInsets.symmetric(

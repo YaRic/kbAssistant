@@ -2,7 +2,8 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:http/http.dart' as http;
-import 'package:kbAssistant/model/placements.dart';
+import '../model/offer.dart';
+import '../model/placements.dart';
 import '../model/player.dart';
 import '../model/user.dart';
 
@@ -113,4 +114,45 @@ List<User> parseUserList(json) {
   }).toList();
   //result.removeWhere((element) => (element == null));
   return result;
+}
+
+Future<Map<Player, bool>> sellPlayerList(
+    List<Player> playersToSell, String leagueId, String token) async {
+  Map<Player, bool> result = new Map<Player, bool>();
+  for (var player in playersToSell) {
+    bool res = await sellPlayer(leagueId, player, token);
+    result.putIfAbsent(player, () => res);
+  }
+  return result;
+}
+
+Future<bool> sellPlayer(String leagueId, Player player, String token) async {
+  if (player.offers.length == 0) {
+    return false;
+  }
+
+  Offer bestOffer;
+
+  for (var offer in player.offers) {
+    if (bestOffer == null) {
+      bestOffer = offer;
+    } else {
+      if (bestOffer.price < offer.price) {
+        bestOffer = offer;
+      }
+    }
+  }
+
+  final http.Response response = await http.post(
+    'https://api.kickbase.com/leagues/${leagueId}/market/${player.id}/offers/${bestOffer.id}/accept',
+    headers: <String, String>{
+      'Content-Type': 'application/json; charset=UTF-8',
+      'Cookie': 'kkstrauth=${token}'
+    },
+  );
+  if (response.statusCode == 200) {
+    return true;
+  } else {
+    throw Exception('Failed to sell Player');
+  }
 }

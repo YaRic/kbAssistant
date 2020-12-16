@@ -42,12 +42,13 @@ class User {
   static List<League> parseLeageNameList(leageJson) {
     var list = leageJson as List;
     List<League> leagueList = list.map((i) {
-      return new League(
-        i['id'].toString(),
-        i['name'].toString(),
-      );
+      if (i['ch'] == null) {
+        return new League(
+          i['id'].toString(),
+          i['name'].toString(),
+        );
+      }
     }).toList();
-    return leagueList;
+    return leagueList.where((element) => element != null).toList();
   }
-
 }

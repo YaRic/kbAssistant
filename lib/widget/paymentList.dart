@@ -8,9 +8,10 @@ import '../model/user.dart';
 class PaymentList extends StatefulWidget {
   final Placements placements;
   final double height;
+  final double width;
   final List<User> userlist;
 
-  const PaymentList({this.placements, this.height, this.userlist});
+  const PaymentList({this.placements, this.height, this.userlist, this.width});
 
   @override
   _PaymentListState createState() => _PaymentListState();
@@ -22,6 +23,11 @@ class _PaymentListState extends State<PaymentList> {
   double paymentSumThirdLast = 3;
 
   final _euroFormat = new NumberFormat("###,###", "de_DE");
+  var textControllerLast = TextEditingController();
+  var textControllerSecondLast = TextEditingController();
+  var textControllerThirdLast = TextEditingController();
+
+  final payFormat = NumberFormat.simpleCurrency(locale: "de_DE");
 
   _loadCache() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -29,6 +35,28 @@ class _PaymentListState extends State<PaymentList> {
       paymentSumLastOne = (prefs.getDouble('paymentSumLastOne') ?? 5);
       paymentSumSecondLast = (prefs.getDouble('paymentSumSecondLast') ?? 4);
       paymentSumThirdLast = (prefs.getDouble('paymentSumThirdLast') ?? 3);
+      textControllerLast =
+          TextEditingController(text: payFormat.format(paymentSumLastOne));
+      textControllerSecondLast =
+          TextEditingController(text: payFormat.format(paymentSumSecondLast));
+      textControllerThirdLast =
+          TextEditingController(text: payFormat.format(paymentSumThirdLast));
+    });
+  }
+
+  _setCache(String last, String second, String third) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+
+    setState(() {
+      paymentSumLastOne = double.parse(
+          last.replaceAll(" ", "").replaceAll("€", "").replaceAll(",", "."));
+      paymentSumSecondLast = double.parse(
+          second.replaceAll(" ", "").replaceAll("€", "").replaceAll(",", "."));
+      paymentSumThirdLast = double.parse(
+          third.replaceAll(" ", "").replaceAll("€", "").replaceAll(",", "."));
+      prefs.setDouble('paymentSumLastOne', paymentSumLastOne);
+      prefs.setDouble('paymentSumSecondLast', paymentSumSecondLast);
+      prefs.setDouble('paymentSumThirdLast', paymentSumThirdLast);
     });
   }
 
@@ -86,7 +114,86 @@ class _PaymentListState extends State<PaymentList> {
               ),
             ),
           ),
-          IconButton(icon: new Icon(Icons.settings), onPressed: null)
+          IconButton(
+            icon: new Icon(Icons.settings),
+            onPressed: () {
+              showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return Container(
+                    height: widget.height * 0.5,
+                    child: AlertDialog(
+                      title: Text(
+                          "Wieviel sollen die jeweils Spieltagsletzten zahlen?"),
+                      content: Column(
+                        children: [
+                          Container(
+                            width: widget.width * 0.2,
+                            child: TextField(
+                              controller: textControllerLast,
+                              keyboardType: TextInputType.number,
+                              decoration: InputDecoration(
+                                labelText: "Letzter",
+                                border: OutlineInputBorder(),
+                                fillColor: Colors.white,
+                                filled: true,
+                              ),
+                            ),
+                          ),
+                          SizedBox(
+                            height: widget.height * 0.05,
+                          ),
+                          Container(
+                            width: widget.width * 0.2,
+                            child: TextField(
+                              controller: textControllerSecondLast,
+                              keyboardType: TextInputType.number,
+                              decoration: InputDecoration(
+                                labelText: "Vorletzter",
+                                border: OutlineInputBorder(),
+                                fillColor: Colors.white,
+                                filled: true,
+                              ),
+                            ),
+                          ),
+                          SizedBox(
+                            height: widget.height * 0.05,
+                          ),
+                          Container(
+                            width: widget.width * 0.2,
+                            child: TextField(
+                              controller: textControllerThirdLast,
+                              keyboardType: TextInputType.number,
+                              decoration: InputDecoration(
+                                labelText: "Drittletzter",
+                                border: OutlineInputBorder(),
+                                fillColor: Colors.white,
+                                filled: true,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      actions: [
+                        FlatButton(
+                            child: Text('Abbrechen'),
+                            onPressed: () {
+                              Navigator.of(context).pop();
+                            }),
+                        FlatButton(
+                          child: Text('Speichern'),
+                          onPressed: () {
+                            _setCache(textControllerLast.text, "5.0", "3");
+                            Navigator.of(context).pop();
+                          },
+                        ),
+                      ],
+                    ),
+                  );
+                },
+              );
+            },
+          )
         ],
       ),
       Container(

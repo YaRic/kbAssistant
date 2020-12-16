@@ -1,9 +1,15 @@
 class Offer {
+  String id;
+
   double price;
 
   DateTime validUntil;
 
-  Offer({this.price, this.validUntil});
+  Offer({
+    this.id,
+    this.price,
+    this.validUntil,
+  });
 
   factory Offer.fromJson(Map<String, dynamic> json) {
     DateTime validUntil = new DateTime(2222);
@@ -13,6 +19,7 @@ class Offer {
     }
 
     return Offer(
+      id: json['id'],
       price: json['price'],
       validUntil: validUntil,
     );

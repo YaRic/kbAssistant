@@ -77,6 +77,8 @@ class _MyHomePageState extends State<MyHomePage> {
 
   List<User> userlist;
 
+  String currentToken;
+
   List<Player> toSell = new List<Player>();
 
   Future<User> _login(String mail, String password) async {
@@ -92,11 +94,10 @@ class _MyHomePageState extends State<MyHomePage> {
 
   Future<void> refresh() async {
     toSell.clear();
-    _login(cacheMail, cachePassword).then((result) => changeLeague(
-        result.leagues[0],
-        result.accessToken,
-        result.username,
-        result.coverimageURL));
+    _login(cacheMail, cachePassword).then((result) {
+      changeLeague(result.leagues[0], result.accessToken, result.username,
+          result.coverimageURL);
+    });
   }
 
   void logout() {
@@ -113,7 +114,9 @@ class _MyHomePageState extends State<MyHomePage> {
       if ((cacheMail != "" && cachePassword != "") &&
           (cacheMail != null && cachePassword != null)) {
         _login(cacheMail, cachePassword).then((result) {
-          changeLeague(result.leagues[0], result.accessToken, result.username,
+          currentToken = result.accessToken;
+          if (currentLeague.id == "fakeID") currentLeague = result.leagues[0];
+          changeLeague(currentLeague, result.accessToken, result.username,
               result.coverimageURL);
         });
       }
@@ -137,6 +140,7 @@ class _MyHomePageState extends State<MyHomePage> {
   void changeLeague(
       League league, String token, String username, String coverimageURL) {
     setState(() {
+      this.currentToken = token;
       this.currentLeague = league;
       this.fetchedBudget = fetchBudgetForLeague(league.id, token);
       this.fetchedPlayers =
@@ -302,19 +306,23 @@ class _MyHomePageState extends State<MyHomePage> {
                                                                       'Abbrechen'),
                                                                   onPressed:
                                                                       () {
-                                                                    // Hier passiert etwas
                                                                     Navigator.of(
                                                                             context)
                                                                         .pop();
                                                                   }),
                                                               FlatButton(
                                                                 child: Text(
-                                                                    'Bestätigen (geht noch nicht)'),
+                                                                    'Bestätigen'),
                                                                 onPressed: () {
-                                                                  // Hier passiert etwas anderes
+                                                                  sellPlayerList(
+                                                                      toSell,
+                                                                      currentLeague
+                                                                          .id,
+                                                                      currentToken);
                                                                   Navigator.of(
                                                                           context)
                                                                       .pop();
+                                                                  refresh();
                                                                 },
                                                               ),
                                                             ],
@@ -359,9 +367,11 @@ class _MyHomePageState extends State<MyHomePage> {
                                     builder: (context, snapshot) {
                                       if (snapshot.hasData) {
                                         return PaymentList(
-                                            placements: snapshot.data,
-                                            height: 0.8 * netHeight,
-                                            userlist: this.userlist);
+                                          placements: snapshot.data,
+                                          height: 0.8 * netHeight,
+                                          userlist: this.userlist,
+                                          width: netHeight * 0.8,
+                                        );
                                       } else if (snapshot.hasError) {
                                         return Text("${snapshot.error}");
                                       }
