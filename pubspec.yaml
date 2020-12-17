@@ -38,6 +38,8 @@ dependencies:
   
   flutter_launcher_name: "^0.0.1"
 
+  clipboard: ^0.1.2+8
+
 
 
   # The following adds the Cupertino Icons font to your application.

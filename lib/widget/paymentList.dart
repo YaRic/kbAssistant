@@ -1,3 +1,4 @@
+import 'package:clipboard/clipboard.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -91,6 +92,20 @@ class _PaymentListState extends State<PaymentList> {
     });
   }
 
+  String buildReadableListForClipboard(Map<String, double> list) {
+    String result = "Zahlliste:\n\n";
+
+    list.forEach((key, value) {
+      result = result +
+          "${widget.userlist.where((element) => element.userID == key).first.username}" +
+          " -> " +
+          payFormat.format(value) +
+          "\n";
+    });
+
+    return result;
+  }
+
   @override
   Widget build(BuildContext context) {
     Map<String, double> list = _calculatePayments();
@@ -124,90 +139,115 @@ class _PaymentListState extends State<PaymentList> {
               ),
             ),
           ),
-          IconButton(
-            icon: new Icon(Icons.settings),
-            onPressed: () {
-              showDialog(
-                context: context,
-                builder: (BuildContext context) {
-                  return Container(
-                    height: widget.height * 0.5,
-                    child: AlertDialog(
-                      title: Text(
-                          "Wieviel sollen die jeweils Spieltagsletzten zahlen?"),
-                      content: Column(
-                        children: [
-                          Container(
-                            width: widget.width * 0.2,
-                            child: TextField(
-                              controller: textControllerLast,
-                              keyboardType: TextInputType.number,
-                              decoration: InputDecoration(
-                                labelText: "Letzter",
-                                border: OutlineInputBorder(),
-                                fillColor: Colors.white,
-                                filled: true,
+          Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              IconButton(
+                  icon: new Icon(Icons.info),
+                  onPressed: () {
+                    showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return Container(
+                              height: widget.height * 0.5,
+                              child: AlertDialog(
+                                title: Text(
+                                    "Um das Kickbase Spiel noch spannender zu machen, hat sich unsere Liga dazu entschieden, dass die letzten drei jedes Spieltages gemeinsam in einen Topf einzahlen der gemeinsam am Ende der Saison auf den Kopf gehauen wird. \n \nDie Werte könnt ihr über die Einstellungen frei konfigurieren."),
+                              ));
+                        });
+                  }),
+              IconButton(
+                  icon: new Icon(Icons.copy),
+                  onPressed: () {
+                    FlutterClipboard.copy(list.toString()).then(
+                        (value) => print(buildReadableListForClipboard(list)));
+                  }),
+              IconButton(
+                icon: new Icon(Icons.settings),
+                onPressed: () {
+                  showDialog(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return Container(
+                        height: widget.height * 0.5,
+                        child: AlertDialog(
+                          title: Text(
+                              "Wieviel sollen die jeweils Spieltagsletzten zahlen?"),
+                          content: Column(
+                            children: [
+                              Container(
+                                width: widget.width * 0.2,
+                                child: TextField(
+                                  controller: textControllerLast,
+                                  keyboardType: TextInputType.number,
+                                  decoration: InputDecoration(
+                                    labelText: "Letzter",
+                                    border: OutlineInputBorder(),
+                                    fillColor: Colors.white,
+                                    filled: true,
+                                  ),
+                                ),
                               ),
-                            ),
-                          ),
-                          SizedBox(
-                            height: widget.height * 0.05,
-                          ),
-                          Container(
-                            width: widget.width * 0.2,
-                            child: TextField(
-                              controller: textControllerSecondLast,
-                              keyboardType: TextInputType.number,
-                              decoration: InputDecoration(
-                                labelText: "Vorletzter",
-                                border: OutlineInputBorder(),
-                                fillColor: Colors.white,
-                                filled: true,
+                              SizedBox(
+                                height: widget.height * 0.05,
                               ),
-                            ),
-                          ),
-                          SizedBox(
-                            height: widget.height * 0.05,
-                          ),
-                          Container(
-                            width: widget.width * 0.2,
-                            child: TextField(
-                              controller: textControllerThirdLast,
-                              keyboardType: TextInputType.number,
-                              decoration: InputDecoration(
-                                labelText: "Drittletzter",
-                                border: OutlineInputBorder(),
-                                fillColor: Colors.white,
-                                filled: true,
+                              Container(
+                                width: widget.width * 0.2,
+                                child: TextField(
+                                  controller: textControllerSecondLast,
+                                  keyboardType: TextInputType.number,
+                                  decoration: InputDecoration(
+                                    labelText: "Vorletzter",
+                                    border: OutlineInputBorder(),
+                                    fillColor: Colors.white,
+                                    filled: true,
+                                  ),
+                                ),
                               ),
-                            ),
+                              SizedBox(
+                                height: widget.height * 0.05,
+                              ),
+                              Container(
+                                width: widget.width * 0.2,
+                                child: TextField(
+                                  controller: textControllerThirdLast,
+                                  keyboardType: TextInputType.number,
+                                  decoration: InputDecoration(
+                                    labelText: "Drittletzter",
+                                    border: OutlineInputBorder(),
+                                    fillColor: Colors.white,
+                                    filled: true,
+                                  ),
+                                ),
+                              ),
+                            ],
                           ),
-                        ],
-                      ),
-                      actions: [
-                        FlatButton(
-                            child: Text('Abbrechen'),
-                            onPressed: () {
-                              Navigator.of(context).pop();
-                            }),
-                        FlatButton(
-                          child: Text('Speichern'),
-                          onPressed: () {
-                            _setCache(
-                              textControllerLast.text,
-                              textControllerSecondLast.text,
-                              textControllerThirdLast.text,
-                            );
-                            Navigator.of(context).pop();
-                          },
+                          actions: [
+                            FlatButton(
+                                child: Text('Abbrechen'),
+                                onPressed: () {
+                                  Navigator.of(context).pop();
+                                }),
+                            FlatButton(
+                              child: Text('Speichern'),
+                              onPressed: () {
+                                _setCache(
+                                  textControllerLast.text,
+                                  textControllerSecondLast.text,
+                                  textControllerThirdLast.text,
+                                );
+                                Navigator.of(context).pop();
+                              },
+                            ),
+                          ],
                         ),
-                      ],
-                    ),
+                      );
+                    },
                   );
                 },
-              );
-            },
-          )
+              )
+            ],
+          ),
         ],
       ),
       Container(
