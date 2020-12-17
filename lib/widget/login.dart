@@ -1,13 +1,19 @@
 import 'package:flutter/material.dart';
 
+// Widget for the Login page
 class LoginPage extends StatefulWidget {
-  Function _login;
+  // Function that should be executed after user fill the form
+  final Function _login;
 
-  Function _changeLeague;
+  // Function that changes the league (here used to trigger the display infomation, otherwise no data will be displayed after login)
+  final Function _changeLeague;
 
-  double width;
+  // width the widget should take
+  final double width;
 
-  double height;
+  // height the widget should take
+  final double height;
+
 
   LoginPage(this._login, this._changeLeague, this.width, this.height);
 
@@ -16,8 +22,11 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
+
+  // Controller to detect changes on the unsermane text field
   final usernameController = TextEditingController();
 
+  // Controller to detect changes on the unsermane password field
   final passwordController = TextEditingController();
 
   @override
@@ -32,7 +41,7 @@ class _LoginPageState extends State<LoginPage> {
             controller: usernameController,
             decoration: InputDecoration(
               border: OutlineInputBorder(),
-              hintText: 'username',
+              hintText: 'mail',
             ),
           ),
           SizedBox(

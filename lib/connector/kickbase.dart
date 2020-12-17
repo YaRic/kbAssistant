@@ -7,8 +7,11 @@ import '../model/placements.dart';
 import '../model/player.dart';
 import '../model/user.dart';
 
+// This is the class which handle the http connection to the Kickbase REST API
+
+// Method that handle the login (with a given mail and password) of a user and return a future of the class user
 Future<User> kickbaseLogin(String username, String password) async {
-  print("LOGIN CALL");
+  print("HTTP LOGIN CALL");
   final http.Response response = await http.post(
     'https://api.kickbase.com/user/login',
     headers: <String, String>{
@@ -27,8 +30,9 @@ Future<User> kickbaseLogin(String username, String password) async {
   }
 }
 
+// Fetch the budget for a user (by token) for a choosen league
 Future<double> fetchBudgetForLeague(String leagueId, String token) async {
-  print("BUDGET CALL");
+  print("HTTP BUDGET CALL");
   final response = await http.get(
       'https://api.kickbase.com/leagues/${leagueId}/me',
       headers: {HttpHeaders.cookieHeader: "kkstrauth=${token};"});
@@ -42,14 +46,16 @@ Future<double> fetchBudgetForLeague(String leagueId, String token) async {
   }
 }
 
+// Parse the budget of the http response
 double parseBudgetFromLeagueMeCall(json) {
   String stringResult = json['budget'].toString();
   return double.parse(stringResult);
 }
 
+// Fetch the player (including offers) from kickbase
 Future<List<Player>> fetchPlayerForLeagueFromUser(
     String leagueId, String username, String token) async {
-  print("PLAYER CALL");
+  print("HTTP PLAYER CALL");
   final response = await http.get(
       'https://api.kickbase.com/leagues/${leagueId}/market',
       headers: {HttpHeaders.cookieHeader: "kkstrauth=${token};"});
@@ -63,6 +69,7 @@ Future<List<Player>> fetchPlayerForLeagueFromUser(
   }
 }
 
+// Parse the user list from GET market Call
 List<Player> parsePlayerListFromMarketCall(json, String username) {
   var list = json['players'] as List;
 
@@ -77,8 +84,9 @@ List<Player> parsePlayerListFromMarketCall(json, String username) {
   return result;
 }
 
+// Fetch the user placement for a league (just userId not name included)
 Future<Placements> fetchPlacements(String leagueId, String token) async {
-  print("PLACEMENT CALL");
+  print("HTTP PLACEMENT CALL");
   final response = await http.get(
       'https://api.kickbase.com/leagues/${leagueId}/stats',
       headers: {HttpHeaders.cookieHeader: "kkstrauth=${token};"});
@@ -92,8 +100,9 @@ Future<Placements> fetchPlacements(String leagueId, String token) async {
   }
 }
 
+// Fetch all users for a league (incl. username)
 Future<List<User>> fetchLeagueUser(String leagueId, String token) async {
-  print("LEAGUE USER CALL");
+  print("HTTP LEAGUE USER CALL");
   final response = await http.get(
       'https://api.kickbase.com/leagues/${leagueId}/users',
       headers: {HttpHeaders.cookieHeader: "kkstrauth=${token};"});
@@ -107,6 +116,7 @@ Future<List<User>> fetchLeagueUser(String leagueId, String token) async {
   }
 }
 
+// Parse the list of users
 List<User> parseUserList(json) {
   var list = json['users'] as List;
 
@@ -117,10 +127,11 @@ List<User> parseUserList(json) {
       coverimageURL: entry['profile'],
     );
   }).toList();
-  //result.removeWhere((element) => (element == null));
+
   return result;
 }
 
+// Sell a list of players
 Future<Map<Player, bool>> sellPlayerList(
     List<Player> playersToSell, String leagueId, String token) async {
   print("SELL PLAYER CALL");
@@ -132,6 +143,7 @@ Future<Map<Player, bool>> sellPlayerList(
   return result;
 }
 
+// Sell a single player (used by sell PlayerList)
 Future<bool> sellPlayer(String leagueId, Player player, String token) async {
   if (player.offers.length == 0) {
     return false;
@@ -163,6 +175,7 @@ Future<bool> sellPlayer(String leagueId, Player player, String token) async {
   }
 }
 
+// Fetch the information for how much the player was selled by a user
 Future<double> fetchBoughtForForUser(
     String playerId, String leagueId, String token) async {
   print("BOUGHT FOR CALL");
@@ -180,10 +193,12 @@ Future<double> fetchBoughtForForUser(
   }
 }
 
+// Parse the buyPrice info
 double parseBoughtForFromPlayerStatsCall(json) {
   return double.parse(json['buyPrice'].toString());
 }
 
+// Enrich a list of player with the boughtFor value
 Future<List<Player>> enrichByBoughtValue(
     List<Player> players, String leagueId, String token) async {
   for (var player in players) {

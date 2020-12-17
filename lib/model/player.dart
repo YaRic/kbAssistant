@@ -1,27 +1,33 @@
-import 'package:kbAssistant/model/player.dart';
-import '../connector/kickbase.dart';
-
 import './offer.dart';
 
+// Object that represents a player
 class Player {
+
+  // ID of the player 
   String id;
 
+  // Firstname of the player
   String firstName;
 
+  // Last name of the player
   String lastName;
 
+  // Username of the owner of the player
   String ownerUsername;
 
+  // current market value 
   double marketvalue;
 
+  // List of offers
   List<Offer> offers;
 
+  // Link to the cover URL
   String coverURL;
 
-  bool toSell;
-
+  // price that was payed for this player by the owner
   double boughtFor;
 
+  // Team ID of the Bundesliga club where the player plays
   String teamId;
 
   Player(
@@ -32,10 +38,10 @@ class Player {
       this.marketvalue,
       this.offers,
       this.coverURL,
-      this.toSell = false,
       this.boughtFor,
       this.teamId});
 
+  // Factory that parse the json from http response market call to a Player object
   factory Player.fromJson(Map<String, dynamic> json) {
     String username;
     String coverURL;
@@ -72,6 +78,7 @@ class Player {
         teamId: json['teamId']);
   }
 
+  // Helper that parse the offer part of the response
   static List<Offer> parseOffers(offerjson) {
     var list = offerjson as List;
     List<Offer> offerList =

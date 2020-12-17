@@ -83,8 +83,8 @@ class PlayerAvatar extends StatelessWidget {
     {
       // Leipzig
       "teamId": "43",
-      "primaryColor": Color(0xFF0e0223c),
-      "secondaryColor": Color(0xFF0ffffff)
+      "primaryColor": Color(0xFF0ffffff),
+      "secondaryColor": Color(0xFF0e0223c)
     },
     {
       // Bremen

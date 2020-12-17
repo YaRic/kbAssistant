@@ -4,7 +4,9 @@ import 'package:kbAssistant/widget/playerAvatar.dart';
 import '../model/player.dart';
 import '../connector/kickbase.dart';
 
+// Widget to show the market value in/decrease of the users players
 class MarketValueIncrease extends StatelessWidget {
+  //
   final List<Player> allPlayers;
 
   final double height;

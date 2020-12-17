@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:kbAssistant/connector/kickbase.dart';
 import 'package:kbAssistant/model/placements.dart';
 import 'package:kbAssistant/widget/login.dart';
@@ -15,6 +16,9 @@ import './model/player.dart';
 import 'widget/budget.dart';
 
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
+  SystemChrome.setPreferredOrientations(
+      [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);
   runApp(KbAssistant());
 }
 
@@ -318,38 +322,55 @@ class _MyHomePageState extends State<MyHomePage> {
                                                               FlatButton(
                                                                 child: Text(
                                                                     'Bestätigen'),
-                                                                onPressed:
-                                                                    () {
-                                                                  sellPlayerList(toSell, currentLeague.id, currentToken).then((value) {
-                                                                    print(value.toString());
-                                                                    Navigator.of(context).pop();
-                                                                    refresh(currentLeague.id);
-                                                                    if (value.containsValue(false)) {
+                                                                onPressed: () {
+                                                                  sellPlayerList(
+                                                                          toSell,
+                                                                          currentLeague
+                                                                              .id,
+                                                                          currentToken)
+                                                                      .then(
+                                                                          (value) {
+                                                                    print(value
+                                                                        .toString());
+                                                                    Navigator.of(
+                                                                            context)
+                                                                        .pop();
+                                                                    refresh(
+                                                                        currentLeague
+                                                                            .id);
+                                                                    if (value
+                                                                        .containsValue(
+                                                                            false)) {
                                                                       showDialog(
-                                                                        context: context,
-                                                                        builder: (context) {
-                                                                          Future.delayed(Duration(seconds: 2), () {
+                                                                          context:
+                                                                              context,
+                                                                          builder:
+                                                                              (context) {
+                                                                            Future.delayed(Duration(seconds: 2),
+                                                                                () {
                                                                               Navigator.of(context).pop(true);
+                                                                            });
+                                                                            return AlertDialog(
+                                                                              title: Text('Hoopala da ist etwas schief gelaufen'),
+                                                                            );
                                                                           });
-                                                                        return AlertDialog(
-                                                                           title: Text('Hoopala da ist etwas schief gelaufen'),
-                                                                        );
-                                                                      });
                                                                     } else {
                                                                       showDialog(
-                                                                        context: context,
-                                                                        builder: (context) {
-                                                                          Future.delayed(Duration(seconds: 2), () {
+                                                                          context:
+                                                                              context,
+                                                                          builder:
+                                                                              (context) {
+                                                                            Future.delayed(Duration(seconds: 2),
+                                                                                () {
                                                                               Navigator.of(context).pop(true);
+                                                                            });
+                                                                            return AlertDialog(
+                                                                              title: Text('Alle Spieler erfolgreich verkauft'),
+                                                                            );
                                                                           });
-                                                                        return AlertDialog(
-                                                                           title: Text('Alle Spieler erfolgreich verkauft'),
-                                                                        );
-                                                                      });
                                                                     }
                                                                     return value;
                                                                   });
-                                                                  
                                                                 },
                                                               ),
                                                             ],
