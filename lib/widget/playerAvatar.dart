@@ -88,7 +88,7 @@ class PlayerAvatar extends StatelessWidget {
     },
     {
       // Bremen
-      "teamId": "20",
+      "teamId": "10",
       "primaryColor": Color(0xFF0009556),
       "secondaryColor": Color(0xFF0ffffff)
     },
@@ -100,13 +100,13 @@ class PlayerAvatar extends StatelessWidget {
     },
     {
       // Schalke
-      "teamId": "7",
+      "teamId": "8",
       "primaryColor": Color(0xFF00063aa),
       "secondaryColor": Color(0xFF0ffffff)
     },
     {
       // Leverkusen
-      "teamId": "20",
+      "teamId": "7",
       "primaryColor": Color(0xFF0000000),
       "secondaryColor": Color(0xFF0e4210b)
     },
@@ -118,7 +118,7 @@ class PlayerAvatar extends StatelessWidget {
     },
     {
       // Augsburg
-      "teamId": "20",
+      "teamId": "13",
       "primaryColor": Color(0xFF0ba3733),
       "secondaryColor": Color(0xFF0347553)
     },
