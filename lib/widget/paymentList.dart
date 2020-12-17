@@ -114,9 +114,9 @@ class _PaymentListState extends State<PaymentList> {
     });
     if (list.length < 3)
       return Padding(
-        padding: const EdgeInsets.all(8.0),
+        padding: const EdgeInsets.all(15.0),
         child: Text(
-          "Liga zu klein um eine Zahlliste berechnen zu können",
+          "Zahlliste kann erst ab einer Ligagröße von 3 Spielern berechnet werden.\n\n Um das Kickbase Spiel noch spannender zu machen, hat sich unsere Liga dazu entschieden, dass die letzten drei jedes Spieltages gemeinsam in einen Topf einzahlen der gemeinsam am Ende der Saison auf den Kopf gehauen wird. \n \nDie Werte könnt ihr über die Einstellungen frei konfigurieren.",
           style: TextStyle(
             fontFamily: "Eurostile",
             fontSize: 23,
@@ -159,8 +159,9 @@ class _PaymentListState extends State<PaymentList> {
               IconButton(
                   icon: new Icon(Icons.copy),
                   onPressed: () {
-                    FlutterClipboard.copy(list.toString()).then(
-                        (value) => print(buildReadableListForClipboard(list)));
+                    String clipCopy = buildReadableListForClipboard(list);
+                    FlutterClipboard.copy(clipCopy)
+                        .then((value) => print(clipCopy));
                   }),
               IconButton(
                 icon: new Icon(Icons.settings),

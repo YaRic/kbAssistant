@@ -159,7 +159,7 @@ Future<bool> sellPlayer(String leagueId, Player player, String token) async {
   if (response.statusCode == 200) {
     return true;
   } else {
-    throw Exception('Failed to sell Player');
+    return false;
   }
 }
 
