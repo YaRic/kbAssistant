@@ -193,7 +193,11 @@ class _PaymentListState extends State<PaymentList> {
                         FlatButton(
                           child: Text('Speichern'),
                           onPressed: () {
-                            _setCache(textControllerLast.text, "5.0", "3");
+                            _setCache(
+                              textControllerLast.text,
+                              textControllerSecondLast.text,
+                              textControllerThirdLast.text,
+                            );
                             Navigator.of(context).pop();
                           },
                         ),
