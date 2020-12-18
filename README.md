@@ -45,7 +45,7 @@ In the "Marktwertsteigerung" section the user can get an feeling if its transfer
 ### Login
 Just use your kickbase mail adress and password.
 
-![](./README_assets\example_login.PNG)
+![](./README_assets/example_login.PNG)
 
 ### Change league
 Via the dropdown the user can switch between his leagues.
@@ -56,7 +56,7 @@ Via the dropdown the user can switch between his leagues.
 
 Via the logout button in the top right corner the user can logout.
 
-![](./README_assets\example_logout.PNG)
+![](./README_assets/example_logout.PNG)
 
 ## Info about Flutter
 This project is a starting point for a Flutter application.
