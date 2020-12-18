@@ -4,7 +4,7 @@ A new Flutter project. That should help kickbase user. Current features are:
 
 ## "+- Rechner"
 A calculator that should give the customer support by organizing their balances to a positive number (otherwise you are not getting points for the upcoming matchday). The user can select the player to sell and sell them directly afterwards by swiping the "verkaufen" SwipeButton.
-![](README_assets\example_PMRechner.png)
+![](./README_assets/example_PMRechner.png)
 
 
 
