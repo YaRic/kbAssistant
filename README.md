@@ -26,14 +26,14 @@ Example for copy to clipboard output:
 Zahlliste 12. Spieltag:
 
 
-Malte Jordan: 42,00 €&nbsp;
-Konstey: 29,00 €&nbsp;
-Tobi : 18,00 €&nbsp;
-Yannik Richter: 18,00 €&nbsp;
-Seto Keicha: 13,00 €&nbsp;
-Steekmozaiek: 8,00 €&nbsp;
-Luis Figo: 7,00 €&nbsp;
-Sandro Di Porzio: 6,00 €&nbsp;
+Malte Jordan: 42,00 € \s\s
+Konstey: 29,00 € \s\s
+Tobi : 18,00 € \s\s
+Yannik Richter: 18,00 €\s\s
+Seto Keicha: 13,00 € \s\s
+Steekmozaiek: 8,00 € \s\s
+Luis Figo: 7,00 € \s\s
+Sandro Di Porzio: 6,00 € \s\s
 ValentinS10: 3,00 €
 
 
