@@ -19,7 +19,7 @@ After the user accepts with "Bestätigen" the player will be sold automatically 
 Background: In our league we decided to make the last three members of each matchday pay a small amount that we collect until end of the season. After the last matchday we use this money for a joined activity.
 
 The "Zahlliste" gives an overview about the current standings of payment. In parallel you can get an short explanation to that feature, copy the list to the clipboard or configure the prices for each placement. 
-![](./README_assets/example_paymentlist1.png) ![](./README_assets/example_paymentlist2.png) ![](./README_assets/example_paymentlist3.png)
+![](./README_assets/example_paymentlist.png) ![](./README_assets/example_paymentlist2.png) ![](./README_assets/example_paymentlist3.png)
 
 Example for copy to clipboard output:
 
