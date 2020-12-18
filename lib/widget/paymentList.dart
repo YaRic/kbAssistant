@@ -93,12 +93,12 @@ class _PaymentListState extends State<PaymentList> {
   }
 
   String buildReadableListForClipboard(Map<String, double> list) {
-    String result = "Zahlliste:\n\n";
+    String result = "Zahlliste ${widget.placements.currentDay}. Spieltag:\n\n";
 
     list.forEach((key, value) {
       result = result +
           "${widget.userlist.where((element) => element.userID == key).first.username}" +
-          " -> " +
+          ": " +
           payFormat.format(value) +
           "\n";
     });
@@ -109,9 +109,6 @@ class _PaymentListState extends State<PaymentList> {
   @override
   Widget build(BuildContext context) {
     Map<String, double> list = _calculatePayments();
-    list.forEach((key, value) {
-      print(key + " zahlt " + value.toString() + " €");
-    });
     if (list.length < 3)
       return Padding(
         padding: const EdgeInsets.all(15.0),

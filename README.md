@@ -1,6 +1,10 @@
 # kbAssistant
 
-A new Flutter project.
+A new Flutter project. That should help kickbase user. Current features are:
+
+## "+- Rechner"
+A calculator that should give the customer support by organizing their balances to a positive number (otherwise you are not getting points for the upcoming matchday). The user can select the player to sell and sell them directly afterwards by swiping the "verkaufen" SwipeButton.
+![](2020-12-18-11-10-49.png)
 
 ## Getting Started
 
