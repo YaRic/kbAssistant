@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:kbAssistant/widget/playerAvatar.dart';
+import 'package:kb_assistant/widget/playerAvatar.dart';
 import '../model/player.dart';
 import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
 
@@ -52,12 +52,15 @@ class PlayerList extends StatelessWidget {
                   teamId: allplayers[index].teamId,
                   radius: height * 0.05,
                 ),
-                title: Text("${allplayers[index].firstName} ${allplayers[index].lastName}"),
+                title: Text(
+                    "${allplayers[index].firstName} ${allplayers[index].lastName}"),
                 subtitle: allplayers[index].offers[0].price > 1000000
                     ? Text("Angebot: " +
                         _mioFormat.format(allplayers[index].offers[0].price) +
                         " €")
-                    : allplayers[index].offers[0].price > 10
+                    : (allplayers[index].offers[0].price > 10 &&
+                            DateTime.now().isBefore(
+                                allplayers[index].offers[0].validUntil))
                         ? Text("Angebot: " +
                             _kFormat.format(
                                 allplayers[index].offers[0].price / 1000) +

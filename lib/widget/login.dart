@@ -73,7 +73,7 @@ class _LoginPageState extends State<LoginPage> {
               child: Text(
                 "Login",
                 style: TextStyle(
-                    fontFamily: 'Eurostile',
+                    fontFamily: 'Century Gothic',
                     color: Colors.white,
                     fontSize: widget.height * 0.03,
                     fontWeight: FontWeight.bold),

@@ -16,6 +16,7 @@ Future<User> kickbaseLogin(String username, String password) async {
     'https://api.kickbase.com/user/login',
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
+      HttpHeaders.acceptCharsetHeader: "application/json",
     },
     body: jsonEncode(<String, String>{
       'email': username,
@@ -33,10 +34,12 @@ Future<User> kickbaseLogin(String username, String password) async {
 // Fetch the budget for a user (by token) for a choosen league
 Future<double> fetchBudgetForLeague(String leagueId, String token) async {
   print("HTTP BUDGET CALL");
-  final response = await http.get(
-      'https://api.kickbase.com/leagues/${leagueId}/me',
-      headers: {HttpHeaders.cookieHeader: "kkstrauth=${token};"});
-
+  print(HttpHeaders.authorizationHeader + "Bearer ${token}");
+  final response = await http
+      .get('https://api.kickbase.com/leagues/${leagueId}/me', headers: {
+    HttpHeaders.authorizationHeader: "Bearer ${token}",
+  });
+  print("HALLO! ${response}");
   if (response.statusCode == 200) {
     return parseBudgetFromLeagueMeCall(jsonDecode(response.body));
   } else {
@@ -56,9 +59,10 @@ double parseBudgetFromLeagueMeCall(json) {
 Future<List<Player>> fetchPlayerForLeagueFromUser(
     String leagueId, String username, String token) async {
   print("HTTP PLAYER CALL");
-  final response = await http.get(
-      'https://api.kickbase.com/leagues/${leagueId}/market',
-      headers: {HttpHeaders.cookieHeader: "kkstrauth=${token};"});
+  final response = await http
+      .get('https://api.kickbase.com/leagues/${leagueId}/market', headers: {
+    HttpHeaders.authorizationHeader: "Bearer ${token}",
+  });
 
   if (response.statusCode == 200) {
     return parsePlayerListFromMarketCall(jsonDecode(response.body), username);
@@ -89,7 +93,7 @@ Future<Placements> fetchPlacements(String leagueId, String token) async {
   print("HTTP PLACEMENT CALL");
   final response = await http.get(
       'https://api.kickbase.com/leagues/${leagueId}/stats',
-      headers: {HttpHeaders.cookieHeader: "kkstrauth=${token};"});
+      headers: {HttpHeaders.authorizationHeader: "Bearer ${token}",});
 
   if (response.statusCode == 200) {
     return Placements.fromJson(jsonDecode(response.body));
@@ -105,7 +109,7 @@ Future<List<User>> fetchLeagueUser(String leagueId, String token) async {
   print("HTTP LEAGUE USER CALL");
   final response = await http.get(
       'https://api.kickbase.com/leagues/${leagueId}/users',
-      headers: {HttpHeaders.cookieHeader: "kkstrauth=${token};"});
+      headers: {HttpHeaders.authorizationHeader: "Bearer ${token}",});
 
   if (response.statusCode == 200) {
     return parseUserList(jsonDecode(response.body));
@@ -165,7 +169,7 @@ Future<bool> sellPlayer(String leagueId, Player player, String token) async {
     'https://api.kickbase.com/leagues/${leagueId}/market/${player.id}/offers/${bestOffer.id}/accept',
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
-      'Cookie': 'kkstrauth=${token}'
+      HttpHeaders.authorizationHeader: "Bearer ${token}",
     },
   );
   if (response.statusCode == 200) {
@@ -181,7 +185,7 @@ Future<double> fetchBoughtForForUser(
   print("BOUGHT FOR CALL");
   final response = await http.get(
       'https://api.kickbase.com/leagues/${leagueId}/players/${playerId}/stats',
-      headers: {HttpHeaders.cookieHeader: "kkstrauth=${token};"});
+      headers: {HttpHeaders.authorizationHeader: "Bearer ${token}",});
 
   if (response.statusCode == 200) {
     return parseBoughtForFromPlayerStatsCall(

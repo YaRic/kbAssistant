@@ -115,7 +115,7 @@ class _PaymentListState extends State<PaymentList> {
         child: Text(
           "Zahlliste kann erst ab einer Ligagröße von 3 Spielern berechnet werden.\n\n Um das Kickbase Spiel noch spannender zu machen, hat sich unsere Liga dazu entschieden, dass die letzten drei jedes Spieltages gemeinsam in einen Topf einzahlen der gemeinsam am Ende der Saison auf den Kopf gehauen wird. \n \nDie Werte könnt ihr über die Einstellungen frei konfigurieren.",
           style: TextStyle(
-            fontFamily: "Eurostile",
+            fontFamily: "Century Gothic",
             fontSize: 23,
           ),
         ),
@@ -131,7 +131,7 @@ class _PaymentListState extends State<PaymentList> {
               "Zahlliste: ",
               style: TextStyle(
                 fontSize: 22,
-                fontFamily: "Eurostile",
+                fontFamily: "Century Gothic",
                 fontWeight: FontWeight.bold,
               ),
             ),
@@ -269,13 +269,13 @@ class _PaymentListState extends State<PaymentList> {
                     "${widget.userlist.where((element) => element.userID == user).first.username}",
                     style: TextStyle(
                       fontSize: 22,
-                      fontFamily: "Eurostile",
+                      fontFamily: "Century Gothic",
                     )),
                 trailing: Text(
                   "${_euroFormat.format(list[user])} €",
                   style: TextStyle(
                       fontSize: 22,
-                      fontFamily: "Eurostile",
+                      fontFamily: "Century Gothic",
                       fontWeight: FontWeight.bold),
                 ),
               ),

@@ -53,7 +53,7 @@ class UserInfo extends StatelessWidget {
                   style: TextStyle(
                       color: Colors.white,
                       fontSize: 18,
-                      fontFamily: 'Eurostile',
+                      fontFamily: 'Century Gothic',
                       fontWeight: FontWeight.bold),
                   onChanged: (League newValue) {
                     changeLeague(newValue, user.accessToken, user.username,

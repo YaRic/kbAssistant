@@ -37,7 +37,7 @@ class Budget extends StatelessWidget {
         _euroFormatGerman.format(_budget) + " €",
         style: TextStyle(
           color: getcolor(_budget),
-          fontFamily: 'Eurostile',
+          fontFamily: 'Century Gothic',
           fontSize: _height * 0.6,
           fontWeight: FontWeight.w900,
         ),

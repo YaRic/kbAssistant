@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:kbAssistant/widget/playerAvatar.dart';
+import 'package:kb_assistant/widget/playerAvatar.dart';
 import '../model/player.dart';
 import '../connector/kickbase.dart';
 

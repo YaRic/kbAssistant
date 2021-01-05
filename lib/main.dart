@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:kbAssistant/connector/kickbase.dart';
-import 'package:kbAssistant/model/placements.dart';
-import 'package:kbAssistant/widget/login.dart';
-import 'package:kbAssistant/widget/marketValueIncrease.dart';
-import 'package:kbAssistant/widget/paymentList.dart';
-import 'package:kbAssistant/widget/playerlist.dart';
-import 'package:kbAssistant/widget/userInfo.dart';
+import 'package:kb_assistant/connector/kickbase.dart';
+import 'package:kb_assistant/model/placements.dart';
+import 'package:kb_assistant/widget/login.dart';
+import 'package:kb_assistant/widget/marketValueIncrease.dart';
+import 'package:kb_assistant/widget/paymentList.dart';
+import 'package:kb_assistant/widget/playerlist.dart';
+import 'package:kb_assistant/widget/userInfo.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:swipebuttonflutter/swipebuttonflutter.dart';
 
@@ -84,7 +84,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   String currentToken;
 
-  List<Player> toSell = new List<Player>();
+  List<Player> toSell = new List<Player>.empty(growable: true);
 
   Future<User> _login(String mail, String password) async {
     Future<User> loggedInUser = kickbaseLogin(mail, password);
@@ -192,7 +192,9 @@ class _MyHomePageState extends State<MyHomePage> {
       title: Text(
         "Der KB-Assi",
         style: TextStyle(
-            fontFamily: "Eurostile", fontSize: 26, fontWeight: FontWeight.bold),
+            fontFamily: "Century Gothic",
+            fontSize: 26,
+            fontWeight: FontWeight.bold),
         textAlign: TextAlign.right,
       ),
       bottom: TabBar(
@@ -203,7 +205,7 @@ class _MyHomePageState extends State<MyHomePage> {
             Center(
               child: Text(
                 tab,
-                style: TextStyle(fontFamily: 'Eurostile', fontSize: 18),
+                style: TextStyle(fontFamily: 'Century Gothic', fontSize: 18),
               ),
             ),
         ],
@@ -254,9 +256,13 @@ class _MyHomePageState extends State<MyHomePage> {
                                       builder: (context, snapshot) {
                                         print(snapshot);
                                         if (snapshot.hasData) {
+                                          double budgetHeight = 30;
+                                          if (netHeight * 0.06 > 30) {
+                                            budgetHeight = netHeight * 0.06;
+                                          }
                                           return Budget(
                                               (snapshot.data + getSumToSell()),
-                                              netHeight * 0.06);
+                                              budgetHeight);
                                         } else if (snapshot.hasError) {
                                           return Text(
                                             "Budget nicht verfügbar",
@@ -389,7 +395,8 @@ class _MyHomePageState extends State<MyHomePage> {
                                                       top: (netHeight * 0.03),
                                                     ),
                                                     buttonTextStyle: TextStyle(
-                                                        fontFamily: 'Eurostile',
+                                                        fontFamily:
+                                                            'Century Gothic',
                                                         fontWeight:
                                                             FontWeight.bold),
                                                   ),
@@ -403,7 +410,8 @@ class _MyHomePageState extends State<MyHomePage> {
                                                         fontSize: netHeight *
                                                             0.06 *
                                                             0.4,
-                                                        fontFamily: 'Eurostile',
+                                                        fontFamily:
+                                                            'Century Gothic',
                                                         fontWeight:
                                                             FontWeight.bold),
                                                   ),

@@ -1,4 +1,4 @@
-import 'package:kbAssistant/model/Player.dart';
+import 'package:kb_assistant/model/Player.dart';
 
 //Object that represents a league
 class League {
